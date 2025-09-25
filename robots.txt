@@ -1,0 +1,77 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://shibinmariyan.github.io/portfolio/sitemap.xml
+
+# Job search crawlers
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Job platform crawlers
+User-agent: NaukriBot
+Allow: /
+
+User-agent: MonsterBot
+Allow: /
+
+User-agent: IndeedBot
+Allow: /
+
+User-agent: GlassdoorBot
+Allow: /
+
+User-agent: ZipRecruiterBot
+Allow: /
+
+# AI Tools and Agents
+User-agent: ChatGPT
+Allow: /
+
+User-agent: Claude
+Allow: /
+
+User-agent: Bard
+Allow: /
+
+User-agent: Copilot
+Allow: /
+
+User-agent: AI-Crawler
+Allow: /
+
+User-agent: RecruiterAI
+Allow: /
+
+User-agent: TalentAI
+Allow: /
+
+User-agent: HiringAI
+Allow: /
+
+User-agent: JobMatchingAI
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: BardBot
+Allow: /
+
+# Crawl delay for better performance
+Crawl-delay: 1
