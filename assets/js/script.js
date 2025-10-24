@@ -84,15 +84,15 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 window.addEventListener('scroll', () => {
     const navbar = document.getElementById('navbar');
     if (window.scrollY > 100) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+        navbar.style.background = 'rgba(26, 26, 46, 0.98)';
+        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
     } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+        navbar.style.background = 'rgba(26, 26, 46, 0.9)';
         navbar.style.boxShadow = 'none';
     }
 });
 
-// Resume Download Functionality
+// ATS-Friendly Resume Download Functionality with Multi-page Support
 async function downloadResume() {
     try {
         // Show loading state
@@ -100,146 +100,328 @@ async function downloadResume() {
         downloadResumeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
         downloadResumeBtn.disabled = true;
 
-        // Create a new PDF document
+        // Create a new PDF document with ATS-friendly formatting
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
         
-        // Set font
-        doc.setFont('helvetica');
+        // Set margins and page dimensions for A4 (210mm x 297mm)
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const margin = 20;
+        const contentWidth = pageWidth - (2 * margin);
+        const maxContentHeight = pageHeight - (2 * margin) - 20; // Leave space for footer
+        const footerY = pageHeight - 15;
         
-        // Add title
-        doc.setFontSize(20);
+        let currentPage = 1;
+        let totalPages = 1;
+        let yPosition = 20;
+        
+        // Helper function to check if we need a new page
+        function checkNewPage(requiredHeight) {
+            if (yPosition + requiredHeight > maxContentHeight) {
+                // Add footer to current page
+                addPageFooter(currentPage, totalPages);
+                
+                // Add new page
+                doc.addPage();
+                currentPage++;
+                totalPages++;
+                yPosition = 20;
+                return true;
+            }
+            return false;
+        }
+        
+        // Helper function to add page footer
+        function addPageFooter(pageNum, totalPages) {
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Generated on: ' + new Date().toLocaleDateString(), margin, footerY);
+            doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - margin - 20, footerY);
+        }
+        
+        // Helper function to add text with proper wrapping and pagination
+        function addText(text, x, y, maxWidth = contentWidth, fontSize = 10, fontStyle = 'normal') {
+            doc.setFontSize(fontSize);
+            doc.setFont('helvetica', fontStyle);
+            const lines = doc.splitTextToSize(text, maxWidth);
+            const lineHeight = fontSize * 0.4;
+            const totalHeight = lines.length * lineHeight;
+            
+            // Check if we need a new page
+            if (checkNewPage(totalHeight)) {
+                // Add text to new page
+                doc.text(lines, x, yPosition);
+                return yPosition + totalHeight;
+            }
+            
+            // Add text to current page
+            doc.text(lines, x, y);
+            return y + totalHeight;
+        }
+        
+        // Helper function to add section header with pagination
+        function addSectionHeader(title, y) {
+            const headerHeight = 8;
+            if (checkNewPage(headerHeight)) {
+                y = yPosition;
+            }
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text(title, margin, y);
+            // Add underline
+            doc.setLineWidth(0.5);
+            doc.line(margin, y + 2, margin + 30, y + 2);
+            return y + headerHeight;
+        }
+        
+        // Helper function to add bullet points with pagination
+        function addBulletPoints(items, startY, fontSize = 9) {
+            let currentY = startY;
+            const lineHeight = fontSize * 0.4;
+            
+            items.forEach(item => {
+                const text = '• ' + item;
+                const lines = doc.splitTextToSize(text, contentWidth - 5);
+                const itemHeight = lines.length * lineHeight;
+                
+                if (checkNewPage(itemHeight)) {
+                    currentY = yPosition;
+                }
+                
+                doc.setFontSize(fontSize);
+                doc.setFont('helvetica', 'normal');
+                doc.text(lines, margin + 5, currentY);
+                currentY += itemHeight;
+            });
+            
+            return currentY;
+        }
+        
+        // Header Section - ATS Friendly
+        doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
-        doc.text('Shibin Mariyan Stanly', 20, 30);
+        doc.text('SHIBIN MARIYAN STANLY', margin, yPosition);
+        yPosition += 8;
         
-        // Add subtitle
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Systems Analyst & Full Stack Developer', 20, 40);
-        
-        // Add contact information
-        doc.setFontSize(10);
-        doc.text('Email: shibinmariyanstanley@gmail.com', 20, 55);
-        doc.text('Phone: +91 8075085487', 20, 62);
-        doc.text('Location: Trivandrum, India', 20, 69);
-        doc.text('LinkedIn: linkedin.com/in/shibinmariyanstanly', 20, 76);
-        doc.text('GitHub: github.com/shibinmariyan', 20, 83);
-        
-        // Add line separator
-        doc.setLineWidth(0.5);
-        doc.line(20, 90, 190, 90);
-        
-        // Add Summary section
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Summary', 20, 105);
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        const summaryText = 'Highly experienced Systems Analyst and Senior Software Engineer with a proven track record of delivering web-based solutions. Expertise in full-stack development using the MEAN/MERN stack, with a strong focus on APIs and cloud services like AWS. Adept at translating business needs into technical requirements, managing project lifecycles, and leading cross-functional teams to successful outcomes.';
-        const summaryLines = doc.splitTextToSize(summaryText, 170);
-        doc.text(summaryLines, 20, 115);
-        
-        // Add Professional Experience section
-        let yPosition = 140;
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Professional Experience', 20, yPosition);
-        yPosition += 10;
-        
-        // Current Job
         doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Systems Analyst | InApp Information Technologies India Pvt Ltd', 20, yPosition);
-        yPosition += 7;
-        
-        doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        doc.text('July 2021 - Present | Trivandrum', 20, yPosition);
-        yPosition += 10;
+        doc.text('Systems Analyst & Full Stack Developer', margin, yPosition);
+        yPosition += 12;
         
-        const currentJobPoints = [
-            'Analyzed complex business needs and translated them into detailed technical requirements and user stories',
-            'Developed and deployed robust REST APIs using NodeJS and AWS (Lambda, S3)',
-            'Spearheaded full-stack development of a real-time drawing application using ReactJS and NestJS',
-            'Optimized application performance using IndexedDB and PostgreSQL',
-            'Managed DevOps pipelines using Azure and maintained code quality with Nx',
-            'Achievement: Best Employee of the Quarter (Q1 2025) and multiple performance awards'
+        // Contact Information - ATS Friendly Format
+        const contactInfo = [
+            'Email: shibinmariyanstanley@gmail.com',
+            'Phone: +91 8075085487',
+            'Location: Trivandrum, Kerala, India',
+            'LinkedIn: linkedin.com/in/shibinmariyanstanly',
+            'GitHub: github.com/shibinmariyan'
         ];
         
-        currentJobPoints.forEach(point => {
-            doc.text('• ' + point, 25, yPosition);
+        contactInfo.forEach(info => {
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(info, margin, yPosition);
+            yPosition += 5;
+        });
+        
+        yPosition += 5;
+        
+        // Professional Summary
+        yPosition = addSectionHeader('PROFESSIONAL SUMMARY', yPosition);
+        const summaryText = 'Experienced Systems Analyst and Senior Software Engineer with 6+ years of expertise in MEAN/MERN stack development, AWS cloud services, and full-stack web applications. Proven track record of translating business requirements into technical solutions, leading cross-functional teams, and delivering high-quality software products. Award-winning professional with strong analytical skills and expertise in API development, microservices architecture, and DevOps practices.';
+        yPosition = addText(summaryText, margin, yPosition, contentWidth, 10, 'normal') + 5;
+        
+        // Technical Skills - ATS Friendly
+        yPosition = addSectionHeader('TECHNICAL SKILLS', yPosition);
+        
+        const skillsData = [
+            { category: 'Programming Languages', skills: 'JavaScript, TypeScript, HTML5, CSS3' },
+            { category: 'Frameworks & Libraries', skills: 'React, Angular, Next.js, Node.js, NestJS, Express.js' },
+            { category: 'Cloud & DevOps', skills: 'AWS (Lambda, S3, EC2, EKS, Cognito, SQS), Azure, Docker, CI/CD' },
+            { category: 'Databases', skills: 'MongoDB, PostgreSQL, Redis, IndexedDB' },
+            { category: 'AI & Automation Tools', skills: 'ChatGPT, Claude AI, GitHub Copilot, Automated Testing' },
+            { category: 'Tools & Technologies', skills: 'Git, Nx, JIRA, Microservices, REST API, GraphQL' },
+            { category: 'Methodologies', skills: 'Agile, SDLC, System Analysis, Technical Documentation' }
+        ];
+        
+        skillsData.forEach(skill => {
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text(skill.category + ':', margin, yPosition);
+            doc.setFont('helvetica', 'normal');
+            doc.text(skill.skills, margin + 40, yPosition);
             yPosition += 6;
         });
         
         yPosition += 5;
         
-        // Previous Jobs
-        doc.setFontSize(12);
+        // Professional Experience
+        yPosition = addSectionHeader('PROFESSIONAL EXPERIENCE', yPosition);
+        
+        // Current Position
+        doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
-        doc.text('Senior Full Stack Engineer | Mckayne Technologies', 20, yPosition);
-        yPosition += 7;
+        doc.text('Systems Analyst', margin, yPosition);
+        doc.setFont('helvetica', 'normal');
+        doc.text('InApp Information Technologies India Pvt Ltd', margin + 35, yPosition);
+        yPosition += 6;
         
         doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text('June 2020 - June 2021 | Cochin', 20, yPosition);
-        yPosition += 10;
+        doc.setFont('helvetica', 'italic');
+        doc.text('July 2021 - Present | Trivandrum, Kerala', margin, yPosition);
+        yPosition += 8;
         
-        const prevJobPoints = [
-            'Led a team of developers in end-to-end development using MEAN/MERN stack',
-            'Managed server infrastructure and deployment using AWS',
-            'Engaged directly with clients to capture solution requirements',
-            'Implemented agile methodologies and maintained clear communication with stakeholders'
+        const currentJobAchievements = [
+            'Analyzed complex business requirements and translated them into detailed technical specifications and user stories',
+            'Developed and deployed robust REST APIs using Node.js and AWS services (Lambda, S3, EC2)',
+            'Led full-stack development of revolutionary drawing tool application similar to AutoCAD with Google Maps integration',
+            'Built real-time collaborative drawing features using React.js, NestJS, and WebSocket technologies',
+            'Optimized application performance by implementing IndexedDB and PostgreSQL database solutions',
+            'Managed DevOps pipelines using Azure and maintained code quality standards with Nx monorepo',
+            'Collaborated with cross-functional teams to deliver projects on time and within budget',
+            'Achieved Best Employee of the Quarter (Q1 2025) and multiple performance awards'
         ];
         
-        prevJobPoints.forEach(point => {
-            doc.text('• ' + point, 25, yPosition);
-            yPosition += 6;
-        });
+        yPosition = addBulletPoints(currentJobAchievements, yPosition, 9);
+        yPosition += 5;
         
-        yPosition += 10;
+        // Previous Position
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Senior Full Stack Engineer', margin, yPosition);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Mckayne Technologies', margin + 45, yPosition);
+        yPosition += 6;
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'italic');
+        doc.text('June 2020 - June 2021 | Cochin, Kerala', margin, yPosition);
+        yPosition += 8;
+        
+        const prevJobAchievements = [
+            'Led development team in end-to-end application development using MEAN/MERN stack',
+            'Managed server infrastructure and deployment processes using AWS cloud services',
+            'Engaged directly with clients to gather and analyze solution requirements',
+            'Implemented agile methodologies and maintained clear communication with stakeholders',
+            'Developed scalable web applications with modern frontend and backend technologies'
+        ];
+        
+        yPosition = addBulletPoints(prevJobAchievements, yPosition, 9);
+        yPosition += 5;
+        
+        // Earlier Position
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Frontend Developer', margin, yPosition);
+        doc.setFont('helvetica', 'normal');
+        doc.text('MalaLife Pvt Ltd', margin + 35, yPosition);
+        yPosition += 6;
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'italic');
+        doc.text('May 2018 - April 2019 | Bangalore, Karnataka', margin, yPosition);
+        yPosition += 8;
+        
+        const earlyJobAchievements = [
+            'Developed responsive, cross-browser compatible websites using HTML, CSS, and JavaScript',
+            'Contributed to development of key user-facing features and functionality',
+            'Collaborated with design team to implement pixel-perfect UI/UX designs'
+        ];
+        
+        yPosition = addBulletPoints(earlyJobAchievements, yPosition, 9);
+        yPosition += 8;
+        
+        // Key Projects
+        yPosition = addSectionHeader('KEY PROJECTS', yPosition);
+        
+        // MetalTech Project
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('MetalTech - Drawing Tool Application (2024-2025)', margin, yPosition);
+        yPosition += 6;
+        
+        const metalTechDescription = 'Revolutionary drawing tool application similar to AutoCAD that operates directly on top of Google Maps. Built with React and Nx monorepo architecture, featuring real-time collaborative drawing, precision measurement tools, and seamless map integration for architectural and engineering workflows.';
+        yPosition = addText(metalTechDescription, margin, yPosition, contentWidth, 9, 'normal') + 3;
+        
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Technologies: ', margin, yPosition);
+        doc.setFont('helvetica', 'normal');
+        doc.text('React, Nx, NestJS, PostgreSQL, Google Maps API, Canvas API, Azure', margin + 25, yPosition);
+        yPosition += 8;
+        
+        // Hyphen Project
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Hyphen - Microservices Platform (2021-2024)', margin, yPosition);
+        yPosition += 6;
+        
+        const hyphenDescription = 'Backend development project focusing on robust API development, microservices architecture, and cloud infrastructure. Designed and implemented comprehensive microservices ecosystem handling 50+ API endpoints with 60% performance improvement.';
+        yPosition = addText(hyphenDescription, margin, yPosition, contentWidth, 9, 'normal') + 3;
+        
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Technologies: ', margin, yPosition);
+        doc.setFont('helvetica', 'normal');
+        doc.text('NodeJS, Microservices, AWS, MSSQL, Terraform', margin + 25, yPosition);
+        yPosition += 8;
         
         // Education
-        doc.setFontSize(14);
+        yPosition = addSectionHeader('EDUCATION', yPosition);
+        
+        doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
-        doc.text('Education', 20, yPosition);
-        yPosition += 10;
+        doc.text('Bachelor of Engineering in Computer Science and Engineering', margin, yPosition);
+        yPosition += 6;
         
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
-        doc.text('B.E. in Computer Science and Engineering | Anna University', 20, yPosition);
-        yPosition += 6;
-        doc.text('June 2014 - May 2018', 20, yPosition);
-        yPosition += 10;
+        doc.text('Anna University, Chennai, Tamil Nadu', margin, yPosition);
+        yPosition += 5;
         
-        // Skills
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Skills', 20, yPosition);
-        yPosition += 10;
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'italic');
+        doc.text('June 2014 - May 2018', margin, yPosition);
+        yPosition += 8;
         
-        const skills = [
-            'Languages & Technologies: JavaScript, Python, NodeJS, HTML, CSS, Angular, React',
-            'Cloud & DevOps: AWS, Lambda, S3, Azure, API Development, DevOps',
-            'Frameworks & Libraries: Bootstrap, Tailwind CSS, NestJS, Express, Nx',
-            'Methodologies: Agile, SDLC, System Analysis, Technical Documentation',
-            'Soft Skills: Problem-Solving, Stakeholder Management, Client Collaboration, Team Leadership'
+        // Languages
+        yPosition = addSectionHeader('LANGUAGES', yPosition);
+        
+        const languages = [
+            'English: Fluent',
+            'Malayalam: Native',
+            'Tamil: Conversational'
         ];
         
-        skills.forEach(skill => {
-            doc.text('• ' + skill, 20, yPosition);
-            yPosition += 6;
-        });
+        yPosition = addBulletPoints(languages, yPosition, 10);
+        yPosition += 5;
         
-        // Save the PDF
-        doc.save('Shibin_Mariyan_Stanly_Resume.pdf');
+        // Interests
+        yPosition = addSectionHeader('INTERESTS', yPosition);
+        
+        const interests = [
+            'Problem-Solving',
+            'Team Leadership',
+            'Continuous Learning',
+            'Technology Innovation'
+        ];
+        
+        yPosition = addBulletPoints(interests, yPosition, 10);
+        
+        // Add footer to the last page
+        addPageFooter(currentPage, totalPages);
+        
+        // Save the PDF with ATS-friendly filename
+        doc.save('Shibin_Mariyan_Stanly_Resume_ATS.pdf');
         
         // Reset button state
         downloadResumeBtn.innerHTML = originalText;
         downloadResumeBtn.disabled = false;
         
         // Show success message
-        showMessage('Resume downloaded successfully!', 'success');
+        showMessage(`ATS-friendly resume downloaded successfully! (${totalPages} page${totalPages > 1 ? 's' : ''})`, 'success');
         
     } catch (error) {
         console.error('Error generating PDF:', error);
@@ -380,6 +562,35 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// Scroll-based Skills Animation
+function initSkillsScrollAnimation() {
+    const skillsTrack = document.querySelector('.skills-track');
+    if (!skillsTrack) return;
+    
+    // Clone all skill items for seamless scrolling
+    const skillItems = skillsTrack.querySelectorAll('.skill-item');
+    skillItems.forEach(item => {
+        const clone = item.cloneNode(true);
+        skillsTrack.appendChild(clone);
+    });
+    
+    // Add scroll-based animation
+    const skillsContainer = document.querySelector('.skills-scroll-container');
+    if (skillsContainer) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    skillsTrack.style.animationPlayState = 'running';
+                } else {
+                    skillsTrack.style.animationPlayState = 'paused';
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        observer.observe(skillsContainer);
+    }
+}
+
 // Add smooth reveal animation for skill tags
 function animateSkillTags() {
     const skillTags = document.querySelectorAll('.skill-tag');
@@ -412,6 +623,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (skillsSection) {
         skillsObserver.observe(skillsSection);
     }
+    
+    // Initialize scroll-based skills animation
+    initSkillsScrollAnimation();
+    
+    // Initialize project filters
+    console.log('Initializing project filters...');
+    initProjectFilters();
+    
+    // Initialize scroll animations
+    initScrollAnimations();
+    
 });
 
 // Add click-to-copy functionality for contact details
@@ -526,3 +748,121 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// Project Filter Functionality
+function initProjectFilters() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const projectCards = document.querySelectorAll('.project-card');
+    
+    console.log('Found filter buttons:', filterButtons.length);
+    console.log('Found project cards:', projectCards.length);
+    
+    // Check if elements exist
+    if (!filterButtons.length || !projectCards.length) {
+        console.warn('Project filter elements not found');
+        return;
+    }
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            try {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                const filter = button.getAttribute('data-filter');
+                
+                if (!filter) {
+                    console.warn('No filter attribute found on button');
+                    return;
+                }
+                
+                // Filter projects with animation
+                projectCards.forEach((card, index) => {
+                    const category = card.getAttribute('data-category');
+                    
+                    if (filter === 'all' || category === filter) {
+                        // Show project with fade-in animation
+                        setTimeout(() => {
+                            if (card) {
+                                card.classList.remove('hidden', 'fade-out');
+                                card.classList.add('fade-in');
+                            }
+                        }, index * 50); // Reduced stagger for better performance
+                    } else {
+                        // Hide project with fade-out animation
+                        if (card) {
+                            card.classList.add('fade-out');
+                            setTimeout(() => {
+                                if (card) {
+                                    card.classList.add('hidden');
+                                    card.classList.remove('fade-in');
+                                }
+                            }, 200); // Reduced timeout
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error in project filter:', error);
+            }
+        });
+    });
+}
+
+// Scroll Animations
+function initScrollAnimations() {
+    // Create intersection observer for fade-in animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, observerOptions);
+
+    // Observe all elements with animation classes
+    const animatedElements = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right, .scale-in');
+    animatedElements.forEach(el => {
+        observer.observe(el);
+    });
+
+    // Parallax effect for hero section
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const parallaxElements = document.querySelectorAll('.parallax');
+        
+        parallaxElements.forEach(element => {
+            const speed = element.dataset.speed || 0.5;
+            const yPos = -(scrolled * speed);
+            element.style.transform = `translateY(${yPos}px)`;
+        });
+    });
+
+    // Add hover effects to project cards
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0deg) translateY(-10px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(5deg) translateY(0) scale(1)';
+        });
+    });
+
+    // Add floating animation to skill items
+    const skillItems = document.querySelectorAll('.skill-item');
+    skillItems.forEach((item, index) => {
+        item.style.animationDelay = `${index * 0.1}s`;
+        item.classList.add('float-animation');
+    });
+}
+
