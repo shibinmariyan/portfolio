@@ -895,16 +895,152 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize profile image with fallback
     initProfileImage();
+    
+    // Make all phone numbers clickable with WhatsApp
+    makePhoneNumbersClickable();
 });
+
+// Make phone numbers clickable with WhatsApp links
+function makePhoneNumbersClickable() {
+    // Phone number patterns to match
+    const phonePatterns = [
+        /(\+91[\s-]?)?([6-9]\d{9})/g, // Indian phone numbers
+        /(\+?1[\s.-]?)?\(?([0-9]{3})\)?[\s.-]?([0-9]{3})[\s.-]?([0-9]{4})/g, // US numbers
+        /(\+?\d{1,3}[\s.-]?)?\(?\d{1,4}\)?[\s.-]?\d{1,4}[\s.-]?\d{1,9}/g // General international
+    ];
+    
+    const whatsappNumber = '918075085487'; // WhatsApp number without + or spaces
+    
+    // Function to convert phone number to WhatsApp format
+    function normalizePhoneNumber(phone) {
+        // Remove all non-digit characters except +
+        let cleaned = phone.replace(/[^\d+]/g, '');
+        // Remove + if present and add country code if missing
+        if (cleaned.startsWith('91')) {
+            return cleaned;
+        } else if (cleaned.startsWith('+91')) {
+            return cleaned.substring(1);
+        } else if (cleaned.length === 10) {
+            return '91' + cleaned;
+        }
+        return cleaned;
+    }
+    
+    // Function to wrap phone numbers in links
+    function wrapPhoneNumber(text, phoneNumber) {
+        const normalized = normalizePhoneNumber(phoneNumber);
+        const whatsappUrl = `https://wa.me/${normalized}`;
+        return `<a href="${whatsappUrl}" target="_blank" rel="noopener" class="whatsapp-phone-link" style="color: inherit; text-decoration: none; cursor: pointer;">${phoneNumber}</a>`;
+    }
+    
+    // Find all text nodes and elements that might contain phone numbers
+    const walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+    );
+    
+    const textNodes = [];
+    let node;
+    while (node = walker.nextNode()) {
+        // Skip if parent is already a link or script/style tag
+        const parent = node.parentElement;
+        if (parent && (
+            parent.tagName === 'A' ||
+            parent.tagName === 'SCRIPT' ||
+            parent.tagName === 'STYLE' ||
+            parent.closest('a')
+        )) {
+            continue;
+        }
+        
+        // Check if text contains phone number patterns
+        const text = node.textContent;
+        if (text && (text.includes('8075085487') || text.includes('+91') || /\d{10}/.test(text))) {
+            textNodes.push(node);
+        }
+    }
+    
+    // Process each text node
+    textNodes.forEach(textNode => {
+        let text = textNode.textContent;
+        let modified = false;
+        
+        // Match and replace phone numbers
+        phonePatterns.forEach(pattern => {
+            const matches = [...text.matchAll(pattern)];
+            if (matches.length > 0) {
+                matches.forEach(match => {
+                    const phoneNumber = match[0].trim();
+                    // Skip if it's already in a link or too short/long
+                    if (phoneNumber.length >= 10 && phoneNumber.length <= 15 && !textNode.parentElement.closest('a')) {
+                        const normalized = normalizePhoneNumber(phoneNumber);
+                        // Only replace if it matches our target number or is a valid Indian number
+                        if (normalized.includes('8075085487') || (normalized.startsWith('91') && normalized.length === 12)) {
+                            const whatsappUrl = `https://wa.me/${normalized}`;
+                            const link = `<a href="${whatsappUrl}" target="_blank" rel="noopener" class="whatsapp-phone-link">${phoneNumber}</a>`;
+                            text = text.replace(phoneNumber, link);
+                            modified = true;
+                        }
+                    }
+                });
+            }
+        });
+        
+        if (modified) {
+            const wrapper = document.createElement('span');
+            wrapper.innerHTML = text;
+            textNode.parentNode.replaceChild(wrapper, textNode);
+        }
+    });
+    
+    // Also handle specific known phone numbers in the HTML
+    const knownPhoneNumbers = [
+        '+91 8075085487',
+        '+918075085487',
+        '8075085487',
+        '918075085487'
+    ];
+    
+    knownPhoneNumbers.forEach(phone => {
+        const normalized = normalizePhoneNumber(phone);
+        const whatsappUrl = `https://wa.me/${normalized}`;
+        
+        // Find all instances of this phone number
+        const xpath = `//text()[contains(., '${phone}')]`;
+        const result = document.evaluate(xpath, document, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
+        let node;
+        
+        while (node = result.iterateNext()) {
+            // Skip if already in a link
+            if (node.parentElement && node.parentElement.tagName === 'A') {
+                continue;
+            }
+            
+            const text = node.textContent;
+            if (text.includes(phone)) {
+                const newText = text.replace(new RegExp(phone.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), 
+                    `<a href="${whatsappUrl}" target="_blank" rel="noopener" class="whatsapp-phone-link">${phone}</a>`);
+                
+                if (newText !== text) {
+                    const wrapper = document.createElement('span');
+                    wrapper.innerHTML = newText;
+                    node.parentNode.replaceChild(wrapper, node);
+                }
+            }
+        }
+    });
+}
 
 // Profile image loading with fallback
 function initProfileImage() {
   const profileImg = document.getElementById('profile-img');
   if (profileImg) {
-    // Set up error handling for LinkedIn image
+    // Set up error handling for profile image
     profileImg.addEventListener('error', function() {
-      console.log('LinkedIn image failed to load, using fallback');
-      this.src = 'assets/images/profile-placeholder.jpg';
+      console.log('Profile image failed to load, using fallback');
+      this.src = './assets/images/profile-placeholder.jpg';
       this.alt = 'Profile Image - Fallback';
     });
     
