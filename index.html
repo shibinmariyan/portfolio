@@ -86,7 +86,7 @@
     />
     <meta
       property="og:image"
-      content="https://shibinmariyan.github.io/portfolio/assets/images/profile.jpg"
+      content="https://shibinmariyan.github.io/portfolio/assets/images/profile-placeholder.jpg"
     />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -109,7 +109,7 @@
     />
     <meta
       name="twitter:image"
-      content="https://shibinmariyan.github.io/portfolio/assets/images/profile.jpg"
+      content="https://shibinmariyan.github.io/portfolio/assets/images/profile-placeholder.jpg"
     />
     <meta
       name="twitter:image:alt"
@@ -127,7 +127,7 @@
     />
     <meta
       property="linkedin:image"
-      content="https://shibinmariyan.github.io/portfolio/assets/images/profile.jpg"
+      content="https://shibinmariyan.github.io/portfolio/assets/images/profile-placeholder.jpg"
     />
 
     <!-- Canonical URL -->
@@ -435,7 +435,7 @@
         ],
         "description": "Experienced Systems Analyst and Senior Full Stack Developer with 6+ years expertise. Career highlight: Architected and developed a sophisticated CAD-like 2D web-based drawing tool (similar to AutoCAD) featuring complex mathematical algorithms for geometric operations, PDF generation, multi-layer support over Google Maps/images/plans, built with React, Node.js, Nx monorepo, Azure, and PostgreSQL. Expert in MEAN/MERN stack, AWS, Azure. Best Employee Award Winner. Available for Systems Analyst, Full Stack Developer, Software Engineer positions.",
         "url": "https://shibinmariyan.github.io/portfolio",
-        "image": "https://shibinmariyan.github.io/portfolio/assets/images/profile.jpg",
+        "image": "https://shibinmariyan.github.io/portfolio/assets/images/profile-placeholder.jpg",
         "email": "shibinmariyanstanley@gmail.com",
         "telephone": "+918075085487",
         "address": {
@@ -776,11 +776,10 @@
             <div class="profile-card">
               <div class="profile-image">
                 <img
-                  src="assets/images/profile.jpg"
+                  src="assets/images/profile-placeholder.jpg"
                   alt="Shibin Mariyan Stanly - Systems Analyst & Full Stack Developer"
                   id="profile-img"
                   loading="lazy"
-                  onerror="if(this.src.indexOf('profile-placeholder') === -1) { this.src='assets/images/profile-placeholder.jpg'; }"
                   decoding="async"
                 />
               </div>
@@ -1828,6 +1827,18 @@
       </div>
     </footer>
 
+    <!-- Background Music Player (Hidden - Auto-plays) -->
+    <iframe
+      id="soundcloud-player"
+      width="0"
+      height="0"
+      scrolling="no"
+      frameborder="no"
+      allow="autoplay"
+      style="display: none; position: absolute; left: -9999px;"
+      src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A235243274&color=%23ff5500&auto_play=true&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=true"
+    ></iframe>
+
     <!-- AI Chatbot -->
     <div class="ai-chatbot-toggle" id="aiChatbotToggle">
       <i class="fas fa-robot"></i>
@@ -1861,6 +1872,10 @@
     <!-- PDF generation scripts - COMMENTED OUT (now using resume.html) -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
+    
+    <!-- SoundCloud Widget API -->
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+    
     <script src="assets/js/script.js"></script>
   </body>
 </html>

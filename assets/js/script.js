@@ -98,8 +98,8 @@ async function downloadResumePDF() {
                 // Check if downloadPDF function exists
                 if (typeof iframe.contentWindow.downloadPDF === 'function') {
                     console.log('Calling downloadPDF in iframe...');
-                    // Trigger the download function in the iframe
-                    iframe.contentWindow.downloadPDF();
+                // Trigger the download function in the iframe
+                iframe.contentWindow.downloadPDF();
                 } else {
                     console.error('downloadPDF function not found in iframe');
                     throw new Error('downloadPDF function not available');
@@ -108,7 +108,7 @@ async function downloadResumePDF() {
                 // Remove iframe after download
                 setTimeout(() => {
                     if (document.body.contains(iframe)) {
-                        document.body.removeChild(iframe);
+                    document.body.removeChild(iframe);
                     }
                 }, 3000);
                 
@@ -118,7 +118,7 @@ async function downloadResumePDF() {
                 alert('Opening resume in new tab. Please click the download button there.');
                 window.open('resume.html', '_blank');
                 if (document.body.contains(iframe)) {
-                    document.body.removeChild(iframe);
+                document.body.removeChild(iframe);
                 }
             }
         };
@@ -210,10 +210,10 @@ contactForm.addEventListener('submit', async function(e) {
     const submitBtn = contactForm.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerHTML;
     
-    // Show loading state
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-    submitBtn.disabled = true;
-    
+        // Show loading state
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        submitBtn.disabled = true;
+        
     // OPTION 1: FormSubmit (Free, currently active) - Let form submit naturally
     // FormSubmit will handle the submission and redirect back with success parameter
     // Don't prevent default - let the form submit to FormSubmit
@@ -1054,12 +1054,12 @@ function makePhoneNumbersClickable() {
 function initProfileImage() {
   const profileImg = document.getElementById('profile-img');
   if (profileImg) {
-    // Set up error handling for profile image
+    // Set up error handling for profile image (only once)
     profileImg.addEventListener('error', function() {
-      console.log('Profile image failed to load, using fallback');
-      this.src = './assets/images/profile-placeholder.jpg';
-      this.alt = 'Profile Image - Fallback';
-    });
+      // Stop error handling to prevent infinite loop
+      this.onerror = null;
+      console.warn('Profile image failed to load');
+    }, { once: true });
     
     // Set up load success handler
     profileImg.addEventListener('load', function() {
@@ -1123,3 +1123,63 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Background Music - Auto-play functionality (no controls)
+function initBackgroundMusic() {
+    const soundcloudPlayer = document.getElementById('soundcloud-player');
+    
+    if (!soundcloudPlayer) return;
+    
+    // Wait for SoundCloud widget API to load and auto-play
+    function initWidget() {
+        if (window.SC && soundcloudPlayer.contentWindow) {
+            try {
+                const widget = window.SC.Widget(soundcloudPlayer);
+                
+                // Listen for ready event and auto-play
+                widget.bind(window.SC.Widget.Events.READY, function() {
+                    console.log('Background music player ready');
+                    // Try to play after a short delay to handle autoplay restrictions
+                    setTimeout(function() {
+                        widget.getDuration(function(duration) {
+                            if (duration > 0) {
+                                // Player is ready, try to play
+                                widget.play();
+                                console.log('Background music started');
+                            }
+                        });
+                    }, 1000);
+                });
+                
+                // Auto-restart when track finishes
+                widget.bind(window.SC.Widget.Events.FINISH, function() {
+                    console.log('Background music finished, restarting...');
+                    setTimeout(function() {
+                        widget.seekTo(0);
+                        widget.play();
+                    }, 500);
+                });
+            } catch (e) {
+                console.error('Error initializing background music:', e);
+            }
+        } else {
+            // Retry after a short delay
+            setTimeout(initWidget, 500);
+        }
+    }
+    
+    // Initialize widget when SoundCloud API is ready
+    if (window.SC) {
+        setTimeout(initWidget, 500);
+    } else {
+        // Wait for SoundCloud API to load
+        window.addEventListener('load', function() {
+            setTimeout(initWidget, 1500);
+        });
+    }
+}
+
+// Initialize background music on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initBackgroundMusic();
+});
