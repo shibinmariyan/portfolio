@@ -449,10 +449,16 @@ const skillsObserver = new IntersectionObserver((entries) => {
         skillsObserver.observe(skillsSection);
     }
 
-// Add click-to-copy functionality for contact details
+// Add click-to-copy functionality for contact details (excluding WhatsApp and email links)
 document.addEventListener('DOMContentLoaded', () => {
     const contactItems = document.querySelectorAll('.contact-item a');
     contactItems.forEach(item => {
+        // Skip WhatsApp and email links - let them work normally
+        const href = item.getAttribute('href') || '';
+        if (href.includes('wa.me') || href.includes('whatsapp') || href.startsWith('mailto:')) {
+            return; // Skip this link, let it work normally
+        }
+        
         item.addEventListener('click', function(e) {
             e.preventDefault();
             const text = this.textContent;
@@ -902,6 +908,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Make phone numbers clickable with WhatsApp links
 function makePhoneNumbersClickable() {
+    // Ensure WhatsApp links work properly - remove any interfering handlers
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('a');
+        if (target && (target.href.includes('wa.me') || target.href.includes('whatsapp') || target.classList.contains('whatsapp-phone-link'))) {
+            // Don't prevent default - let WhatsApp links work normally
+            // Remove any toast messages that might be triggered
+            e.stopPropagation();
+            return true;
+        }
+    }, false);
+    
     // Phone number patterns to match
     const phonePatterns = [
         /(\+91[\s-]?)?([6-9]\d{9})/g, // Indian phone numbers
