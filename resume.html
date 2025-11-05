@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shibin Mariyan Stanly - Resume</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Reset all styles to prevent parent page interference */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow-x: hidden !important;
+            font-family: 'Calibri', 'Arial', sans-serif !important;
+        }
+
+        body {
+            font-family: 'Calibri', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+            isolation: isolate;
+        }
+
+        /* Ensure no fixed elements from parent page interfere */
+        body > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .download-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .download-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .download-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        #resume {
+            background: white;
+            padding: 40px 50px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+            isolation: isolate;
+            overflow: visible;
+        }
+
+        /* PDF Page sections - visible on screen, will be captured separately */
+        .pdf-page {
+            margin-bottom: 0;
+            overflow: visible !important;
+            height: auto !important;
+            min-height: auto !important;
+            max-height: none !important;
+        }
+
+        .pdf-page:not(:last-child) {
+            margin-bottom: 40px;
+        }
+        
+        /* Ensure all content is visible */
+        #resume {
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+        }
+        
+        .section, .two-column, .skills-grid {
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+        }
+        
+        /* Prevent page breaks inside important elements */
+        .job, .job-description, .education-item, .language-item, .hobby-item, .section {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        
+        .job-description li, .achievements-list li {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .header {
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .name {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .title {
+            font-size: 18px;
+            color: #34495e;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 11px;
+            color: #555;
+            margin-top: 12px;
+        }
+
+        .contact-info span {
+            display: flex;
+            align-items: center;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-transform: uppercase;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .summary {
+            font-size: 11px;
+            color: #444;
+            text-align: justify;
+            line-height: 1.7;
+        }
+
+        .job {
+            margin-bottom: 20px;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 5px;
+        }
+
+        .job-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .job-date {
+            font-size: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .company {
+            font-size: 12px;
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .job-description {
+            font-size: 11px;
+            color: #555;
+            margin-left: 0;
+            line-height: 1.7;
+        }
+
+        .job-description ul {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+
+        .job-description li {
+            margin-bottom: 6px;
+        }
+
+        .education-item {
+            margin-bottom: 12px;
+        }
+
+        .degree {
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .school {
+            font-size: 11px;
+            color: #555;
+            margin-top: 2px;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            font-size: 11px;
+            position: relative;
+            z-index: 1;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .skill-item {
+            background: #ecf0f1;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: #2c3e50;
+            font-weight: 500;
+            text-align: center;
+            border-left: 3px solid #3498db;
+            position: relative;
+            z-index: 1;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .languages-list {
+            font-size: 11px;
+            color: #555;
+        }
+
+        .language-item {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .language-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .proficiency {
+            color: #7f8c8d;
+            font-size: 10px;
+        }
+
+        .hobbies-list {
+            font-size: 11px;
+            color: #555;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .hobby-item {
+            padding: 6px 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            color: #2c3e50;
+            font-weight: 500;
+            border-left: 3px solid #3498db;
+        }
+
+        .achievements-list {
+            font-size: 11px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .achievements-list li {
+            margin-bottom: 6px;
+            margin-left: 20px;
+        }
+
+        /* Prevent any overlay elements */
+        body::before,
+        body::after,
+        #resume::before,
+        #resume::after {
+            display: none !important;
+            content: none !important;
+        }
+
+        /* Ensure no unwanted backgrounds or borders create visual artifacts */
+        /* Only remove box-shadow from elements that might create overlays */
+        body > *:not(#resume):not(.container):not(.download-section) {
+            box-shadow: none !important;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .download-section {
+                display: none;
+            }
+            #resume {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="download-section">
+            <button class="download-btn" onclick="downloadPDF()">📥 Download Resume as PDF</button>
+        </div>
+
+        <div id="resume">
+            <!-- Page 1: Header + Professional Summary + Professional Experience (all jobs) -->
+            <div class="pdf-page" data-page="1">
+                <div class="header">
+                    <div class="name">SHIBIN MARIYAN STANLY</div>
+                    <div class="title">Systems Analyst & Senior Full Stack Developer</div>
+                    <div class="contact-info">
+                        <span>📧 shibinmariyanstanley@gmail.com</span>
+                        <span>📱 +91 8075085487</span>
+                        <span>📍 Trivandrum, Kerala, India</span>
+                        <span>💼 linkedin.com/in/shibinmariyanstanly</span>
+                        <span>💻 github.com/shibinmariyan</span>
+                        <span>⏰ Notice Period: 2 months</span>
+                    </div>
+                </div>
+
+            <div class="section">
+                <div class="section-title">Professional Summary</div>
+                <div class="summary">
+                    Results-driven Systems Analyst and Senior Full Stack Developer with 6+ years of experience in designing, developing, and deploying scalable web applications using MEAN/MERN stack. <strong>Career Highlight:</strong> Architected and developed a sophisticated <strong>CAD-like 2D web-based drawing tool</strong> (similar to AutoCAD) - one of my most significant career achievements. This innovative application features complex mathematical algorithms for geometric operations, PDF generation, multi-layer support over Google Maps/images/plans/blank canvas, and advanced performance optimization using React, Node.js, Nx monorepo, Azure, and PostgreSQL. Proven expertise in AWS and Azure cloud services, API development, microservices architecture, and mathematical algorithm implementation. Recognized with Best Employee Award for exceptional performance and leadership. Adept at translating business requirements into technical solutions, managing cross-functional teams, and delivering high-impact projects. Strong problem-solving skills with a passion for continuous learning and innovation. Open to new opportunities in Systems Analysis, Full Stack Development, and Software Engineering roles.
+                </div>
+            </div>
+
+                <div class="section">
+                    <div class="section-title">Professional Experience</div>
+                    
+                    <div class="job">
+                        <div class="job-header">
+                            <div class="job-title">Systems Analyst</div>
+                            <div class="job-date">July 2021 - Present</div>
+                        </div>
+                        <div class="company">InApp Information Technologies India Pvt Ltd | Trivandrum</div>
+                        <div class="job-description">
+                            <ul>
+                                <li>Architected and developed a sophisticated 2D web-based drawing tool (CAD-like application) using React, Node.js, and Nx monorepo architecture, enabling users to create technical drawings over Google Maps, images, plans, or blank canvases with advanced geometric manipulation capabilities</li>
+                                <li>Implemented complex mathematical algorithms for geometric operations including segment distance calculations, rotation, mirroring, scaling, and transformation operations, ensuring accurate precision in technical drawings</li>
+                                <li>Developed robust PDF generation functionality for exporting technical drawings with high-fidelity rendering and proper formatting for professional documentation</li>
+                                <li>Designed and developed scalable RESTful APIs using Azure cloud services and PostgreSQL database, optimizing query performance and ensuring data integrity for large-scale drawing operations</li>
+                                <li>Led cross-functional collaboration with project managers, developers, QA teams, and clients to analyze requirements, resolve technical challenges, and deliver solutions on schedule</li>
+                                <li>Architected and implemented microservices-based applications with event-driven architecture using AWS SQS and EventBridge</li>
+                                <li>Implemented CI/CD pipelines using AWS CodePipeline and GitHub Actions, reducing deployment time by 60%</li>
+                                <li>Mentored junior developers and conducted code reviews to maintain high code quality standards and best practices</li>
+                                <li>Translated complex business requirements into technical specifications and system designs, ensuring alignment between stakeholder expectations and technical implementation</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="job">
+                        <div class="job-header">
+                            <div class="job-title">Senior Full Stack Engineer</div>
+                            <div class="job-date">June 2020 - June 2021</div>
+                        </div>
+                        <div class="company">Mckayne Technologies | Cochin</div>
+                        <div class="job-description">
+                            <ul>
+                                <li>Developed and maintained the official company website for Mckayne Technologies, ensuring brand consistency and professional presentation</li>
+                                <li>Led development teams of 4-6 engineers in delivering multiple enterprise-level projects using MEAN/MERN stack for the company's digital presence</li>
+                                <li>Managed AWS infrastructure including EC2, RDS, S3, CloudFront, and Route 53 for production deployments</li>
+                                <li>Collaborated directly with clients to gather requirements, provide technical consultations, and ensure alignment with business objectives</li>
+                                <li>Created comprehensive technical documentation including system architecture, API specifications, and deployment guides</li>
+                                <li>Implemented secure authentication and authorization using JWT, OAuth 2.0, and AWS Cognito</li>
+                                <li>Achieved 95% on-time project delivery rate through effective team management and agile methodologies</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="job">
+                        <div class="job-header">
+                            <div class="job-title">Frontend Developer</div>
+                            <div class="job-date">May 2018 - April 2019</div>
+                        </div>
+                        <div class="company">MalaLife Pvt Ltd | Bangalore</div>
+                        <div class="job-description">
+                            <ul>
+                                <li>Developed frontend features for MalaLife, an astrology-based matchmaking application, using HTML5, CSS3, JavaScript, and modern frontend frameworks</li>
+                                <li>Ensured cross-browser compatibility and optimized applications for mobile and desktop platforms</li>
+                                <li>Implemented UI/UX designs with pixel-perfect accuracy and improved page load times by 35%</li>
+                                <li>Collaborated with backend developers to integrate RESTful APIs and enhance user experience</li>
+                                <li>Contributed to the development of key matchmaking features including profile matching, compatibility analysis, and astrology-based recommendations for the MalaLife platform</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 2: Technical Skills + Education + Achievements + Languages + Hobbies -->
+            <div class="pdf-page" data-page="2">
+                <div class="section">
+                    <div class="section-title">Technical Skills</div>
+                    <div class="skills-grid">
+                        <div class="skill-item">JavaScript/ES6+</div>
+                        <div class="skill-item">TypeScript</div>
+                        <div class="skill-item">Node.js</div>
+                        <div class="skill-item">React.js</div>
+                        <div class="skill-item">Angular 9+</div>
+                        <div class="skill-item">MongoDB</div>
+                        <div class="skill-item">PostgreSQL</div>
+                        <div class="skill-item">AWS Services</div>
+                        <div class="skill-item">RESTful APIs</div>
+                        <div class="skill-item">Microservices</div>
+                        <div class="skill-item">Docker</div>
+                        <div class="skill-item">Git/GitHub</div>
+                        <div class="skill-item">Bootstrap 4+</div>
+                        <div class="skill-item">Tailwind CSS</div>
+                        <div class="skill-item">Python</div>
+                        <div class="skill-item">Shell Script</div>
+                        <div class="skill-item">Agile/Scrum</div>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <div class="section">
+                            <div class="section-title">Education</div>
+                            <div class="education-item">
+                                <div class="degree">Bachelor of Engineering in Computer Science and Engineering</div>
+                                <div class="school">Anna University | 2014 - 2018 | CGPA: 6.4/10</div>
+                            </div>
+                            <div class="education-item">
+                                <div class="degree">Higher Secondary Education (HSE) - Bio-Maths</div>
+                                <div class="school">Kannassa Smaraka Govt HSS | 2013 | 70%</div>
+                            </div>
+                            <div class="education-item">
+                                <div class="degree">Secondary School Leaving Certificate (SSLC)</div>
+                                <div class="school">St. Goretti HSS | 2011 | 75%</div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <div class="section-title">Achievements</div>
+                            <div class="achievements-list">
+                                <ul>
+                                    <li>Best Employee Award Winner for outstanding performance and contributions</li>
+                                    <li>Cricket Team Captain for TPL Season 2023-24</li>
+                                    <li>Best Goalie Award - IFL Tournament</li>
+                                    <li>Successfully delivered 15+ enterprise-level projects</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="section">
+                            <div class="section-title">Languages</div>
+                            <div class="languages-list">
+                                <div class="language-item">
+                                    <span class="language-name">Malayalam</span>
+                                    <span class="proficiency">Native</span>
+                                </div>
+                                <div class="language-item">
+                                    <span class="language-name">English</span>
+                                    <span class="proficiency">Professional</span>
+                                </div>
+                                <div class="language-item">
+                                    <span class="language-name">Hindi</span>
+                                    <span class="proficiency">Professional</span>
+                                </div>
+                                <div class="language-item">
+                                    <span class="language-name">Tamil</span>
+                                    <span class="proficiency">Elementary</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <div class="section-title">Hobbies</div>
+                            <div class="hobbies-list">
+                                <div class="hobby-item">Traveling</div>
+                                <div class="hobby-item">Auto Enthusiast</div>
+                                <div class="hobby-item">Gardening</div>
+                                <div class="hobby-item">Dog Lover</div>
+                                <div class="hobby-item">Cooking</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function downloadPDF() {
+            const button = document.querySelector('.download-btn');
+            button.textContent = '⏳ Generating PDF...';
+            button.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const resume = document.getElementById('resume');
+                
+                if (!resume) {
+                    throw new Error('Resume element not found');
+                }
+                
+                // Force layout calculation - important when in hidden iframe
+                void resume.offsetHeight;
+                
+                // Wait for content to be fully loaded and rendered
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // When in a hidden iframe, we need to ensure the document has proper dimensions
+                // Force the body and html to have explicit dimensions
+                if (document.body.offsetWidth === 0 || document.body.offsetHeight === 0) {
+                    // Set explicit dimensions on body to ensure layout
+                    const originalBodyStyle = document.body.style.cssText;
+                    document.body.style.width = '1000px';
+                    document.body.style.minHeight = '1200px';
+                    document.body.style.position = 'relative';
+                    
+                    // Force reflow
+                    void document.body.offsetHeight;
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                // Ensure resume element has dimensions
+                const computedStyle = window.getComputedStyle(resume);
+                let width = resume.offsetWidth || resume.scrollWidth;
+                let height = resume.offsetHeight || resume.scrollHeight;
+                
+                // If still no dimensions, use computed or fallback
+                if (width === 0 || height === 0) {
+                    // Try to get from computed style
+                    const widthStr = computedStyle.width;
+                    const heightStr = computedStyle.height;
+                    
+                    if (width === 0) {
+                        width = parseInt(widthStr) || 900;
+                    }
+                    if (height === 0) {
+                        height = parseInt(heightStr) || 1200;
+                    }
+                    
+                    // If still zero, set explicit dimensions temporarily
+                    if (width === 0 || height === 0) {
+                        const originalResumeStyle = resume.style.cssText;
+                        resume.style.width = width || '900px';
+                        resume.style.height = height || 'auto';
+                        resume.style.display = 'block';
+                        
+                        // Force reflow
+                        void resume.offsetHeight;
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        
+                        width = resume.offsetWidth || 900;
+                        height = resume.offsetHeight || resume.scrollHeight || 1200;
+                        
+                        // Restore original style after getting dimensions
+                        resume.style.cssText = originalResumeStyle;
+                    }
+                }
+                
+                console.log('Resume dimensions:', width, 'x', height);
+                
+                // Hide any potential overlays before capturing
+                const allElements = document.querySelectorAll('*');
+                const hiddenElements = [];
+                allElements.forEach(el => {
+                    const style = window.getComputedStyle(el);
+                    if (style.position === 'fixed' && 
+                        (parseInt(style.zIndex) > 100 || style.zIndex === 'auto')) {
+                        if (el !== resume && !resume.contains(el)) {
+                            hiddenElements.push({ el, originalDisplay: el.style.display });
+                            el.style.display = 'none';
+                        }
+                    }
+                });
+
+                const canvas = await html2canvas(resume, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff',
+                    allowTaint: false,
+                    ignoreElements: (element) => {
+                        // Ignore any fixed position elements that might overlay
+                        const style = window.getComputedStyle(element);
+                        return style.position === 'fixed' && 
+                               !resume.contains(element) &&
+                               parseInt(style.zIndex) > 100;
+                    }
+                });
+
+                // Restore hidden elements
+                hiddenElements.forEach(({ el, originalDisplay }) => {
+                    el.style.display = originalDisplay;
+                });
+
+                // Validate canvas dimensions
+                if (!canvas || !canvas.width || !canvas.height || canvas.width === 0 || canvas.height === 0) {
+                    console.error('Canvas dimensions:', canvas?.width, canvas?.height);
+                    console.error('Resume element dimensions:', resume.offsetWidth, resume.offsetHeight);
+                    throw new Error('Invalid canvas dimensions: ' + (canvas?.width || 0) + 'x' + (canvas?.height || 0));
+                }
+
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                // Validate calculated dimensions
+                if (!isFinite(imgHeight) || imgHeight <= 0) {
+                    throw new Error('Invalid image dimensions calculated');
+                }
+
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                // Define margins (10mm on all sides)
+                const marginLeft = 10;
+                const marginRight = 10;
+                const marginTop = 10;
+                const marginBottom = 10;
+                
+                // Calculate available width and height with margins
+                const availableWidth = 210 - marginLeft - marginRight; // A4 width minus margins
+                const availableHeight = 297 - marginTop - marginBottom; // A4 height minus margins
+                
+                // Get all PDF page sections
+                const pdfPages = document.querySelectorAll('.pdf-page');
+                
+                if (pdfPages.length === 0) {
+                    // Fallback: use old method if no sections found
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    const totalPages = Math.ceil(imgHeight / pageHeight);
+                    const pixelToMmRatio = imgWidth / canvas.width;
+                    
+                    for (let page = 0; page < totalPages; page++) {
+                        if (page > 0) pdf.addPage();
+                        const pageStartY = (page * pageHeight) / pixelToMmRatio;
+                        const pageEndY = Math.min(((page + 1) * pageHeight) / pixelToMmRatio, canvas.height);
+                        const pageHeightPixels = pageEndY - pageStartY;
+                        
+                        const pageCanvas = document.createElement('canvas');
+                        pageCanvas.width = canvas.width;
+                        pageCanvas.height = pageHeightPixels;
+                        const pageCtx = pageCanvas.getContext('2d');
+                        pageCtx.drawImage(canvas, 0, pageStartY, canvas.width, pageHeightPixels, 0, 0, canvas.width, pageHeightPixels);
+                        
+                        const pageImgData = pageCanvas.toDataURL('image/jpeg', 1.0);
+                        const pageHeightMm = (pageHeightPixels * pixelToMmRatio);
+                        // Scale to fit available width and adjust height proportionally
+                        const scaledWidth = availableWidth;
+                        const scaledHeight = (pageHeightMm * availableWidth) / imgWidth;
+                        // Fit within available height
+                        const finalHeight = Math.min(scaledHeight, availableHeight);
+                        pdf.addImage(pageImgData, 'JPEG', marginLeft, marginTop, scaledWidth, finalHeight);
+                    }
+                } else {
+                    // Capture entire resume as one continuous flow
+                    // Show all sections
+                    pdfPages.forEach(section => {
+                        section.style.display = 'block';
+                    });
+                    
+                    // Force reflow
+                    void resume.offsetHeight;
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                    // Capture entire resume content
+                    const fullCanvas = await html2canvas(resume, {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        backgroundColor: '#ffffff',
+                        allowTaint: false,
+                        height: resume.scrollHeight,
+                        width: resume.scrollWidth,
+                        windowWidth: resume.scrollWidth,
+                        windowHeight: resume.scrollHeight
+                    });
+                    
+                    // Calculate dimensions for PDF with margins
+                    const fullImgWidth = availableWidth; // Use available width (A4 width minus margins)
+                    const fullImgHeight = (fullCanvas.height * fullImgWidth) / fullCanvas.width;
+                    
+                    // Split content across multiple pages based on available height
+                    // Use a conservative buffer to avoid cutting text at page boundaries
+                    // We'll use a smaller usable height per page to leave room for text that might be cut
+                    const safePageHeight = availableHeight - 15; // 15mm buffer to avoid cutting text
+                    const totalPagesNeeded = Math.ceil(fullImgHeight / safePageHeight);
+                    
+                    let currentY = 0; // Track current position in the full image
+                    
+                    for (let page = 0; page < totalPagesNeeded; page++) {
+                        if (page > 0) {
+                            pdf.addPage();
+                        }
+                        
+                        // Calculate how much we can safely fit on this page
+                        let pageStartY = currentY;
+                        let pageEndY = Math.min(currentY + safePageHeight, fullImgHeight);
+                        
+                        // For pages that aren't the last, we need to ensure we don't cut text
+                        // Instead of overlapping, we'll use a conservative approach:
+                        // Only use the safe height, and if there's remaining content, it goes to next page
+                        // This prevents any text from being cut
+                        if (page < totalPagesNeeded - 1) {
+                            // Ensure we end at a safe point - don't go beyond safe height
+                            // This might leave some whitespace, but ensures no text is cut
+                            pageEndY = Math.min(currentY + safePageHeight, fullImgHeight);
+                        }
+                        
+                        let pageHeight = pageEndY - pageStartY;
+                        
+                        // Only proceed if we have content for this page
+                        if (pageHeight > 0) {
+                            // Create a canvas for this page's portion
+                            const pageCanvas = document.createElement('canvas');
+                            const sourceY = (pageStartY / fullImgHeight) * fullCanvas.height;
+                            const sourceHeight = (pageHeight / fullImgHeight) * fullCanvas.height;
+                            pageCanvas.width = fullCanvas.width;
+                            pageCanvas.height = sourceHeight;
+                            const pageCtx = pageCanvas.getContext('2d');
+                            
+                            // Draw the portion of the image for this page
+                            pageCtx.drawImage(
+                                fullCanvas, 
+                                0, sourceY, fullCanvas.width, sourceHeight,
+                                0, 0, pageCanvas.width, pageCanvas.height
+                            );
+                            
+                            const pageImgData = pageCanvas.toDataURL('image/jpeg', 1.0);
+                            // Add image with margins
+                            pdf.addImage(pageImgData, 'JPEG', marginLeft, marginTop, fullImgWidth, pageHeight);
+                        }
+                        
+                        // Move to next page position
+                        // Start fresh at the end of this page (no overlap to avoid duplication)
+                        currentY = pageEndY;
+                    }
+                }
+
+                pdf.save('Shibin_Mariyan_Stanly_Resume.pdf');
+                
+                button.textContent = '✅ Downloaded!';
+                setTimeout(() => {
+                    button.textContent = '📥 Download Resume as PDF';
+                    button.disabled = false;
+                }, 2000);
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                button.textContent = '❌ Error - Try Again';
+                setTimeout(() => {
+                    button.textContent = '📥 Download Resume as PDF';
+                    button.disabled = false;
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>

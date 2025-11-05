@@ -43,6 +43,12 @@
         <priority>0.7</priority>
     </url>
     <url>
+        <loc>https://shibinmariyan.github.io/portfolio/resume.html</loc>
+        <lastmod>2025-10-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://shibinmariyan.github.io/portfolio/docs/resume.html</loc>
         <lastmod>2024-12-01</lastmod>
         <changefreq>monthly</changefreq>

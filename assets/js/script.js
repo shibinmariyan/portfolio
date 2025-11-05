@@ -1,56 +1,12 @@
+// Portfolio JavaScript - Clean Version
+
 // DOM Elements
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
+const navbar = document.getElementById('navbar');
+const contactForm = document.getElementById('contactForm');
 const downloadResumeBtn = document.getElementById('download-resume');
 const downloadResumeHero = document.getElementById('download-resume-hero');
-const contactForm = document.getElementById('contactForm');
-
-// Initialize Particles.js and update current year
-document.addEventListener('DOMContentLoaded', function() {
-    // Update current year in footer
-    const currentYearElement = document.getElementById('current-year');
-    if (currentYearElement) {
-        currentYearElement.textContent = new Date().getFullYear();
-    }
-    
-    // Initialize Particles.js
-    if (typeof particlesJS !== 'undefined') {
-        particlesJS('particles-js', {
-            particles: {
-                number: { value: 100, density: { enable: true, value_area: 800 } },
-                color: { value: '#ffffff' },
-                shape: { type: 'circle' },
-                opacity: { value: 0.5, random: true },
-                size: { value: 3, random: true },
-                line_linked: {
-                    enable: true,
-                    distance: 150,
-                    color: '#ffffff',
-                    opacity: 0.4,
-                    width: 1,
-                },
-                move: {
-                    enable: true,
-                    speed: 2,
-                    direction: 'none',
-                    random: true,
-                    straight: false,
-                    out_mode: 'out',
-                    bounce: false,
-                },
-            },
-            interactivity: {
-                detect_on: 'canvas',
-                events: {
-                    onhover: { enable: true, mode: 'grab' },
-                    onclick: { enable: true, mode: 'push' },
-                    resize: true,
-                },
-            },
-            retina_detect: true,
-        });
-    }
-});
 
 // Mobile Navigation Toggle
 hamburger.addEventListener('click', () => {
@@ -82,424 +38,320 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 // Navbar scroll effect
 window.addEventListener('scroll', () => {
-    const navbar = document.getElementById('navbar');
     if (window.scrollY > 100) {
-        navbar.style.background = 'rgba(26, 26, 46, 0.98)';
-        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
+        navbar.style.background = 'rgba(26, 26, 46, 0.95)';
+        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
     } else {
         navbar.style.background = 'rgba(26, 26, 46, 0.9)';
         navbar.style.boxShadow = 'none';
     }
 });
 
-// ATS-Friendly Resume Download Functionality with Multi-page Support
-async function downloadResume() {
+// Resume Download Functionality - Direct PDF Download
+async function downloadResumePDF() {
+    console.log('downloadResumePDF called');
     try {
+        // Track resume download
+        if (typeof trackResumeDownload === 'function') {
+            trackResumeDownload('portfolio_download');
+        }
+        
         // Show loading state
-        const originalText = downloadResumeBtn.innerHTML;
-        downloadResumeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
-        downloadResumeBtn.disabled = true;
+        const downloadButtons = document.querySelectorAll('[id*="download-resume"], .nav-link.download-btn, .download-btn');
+        downloadButtons.forEach(btn => {
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+            btn.disabled = true;
+            
+            // Reset after 5 seconds
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 5000);
+        });
 
-        // Create a new PDF document with ATS-friendly formatting
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        
-        // Set margins and page dimensions for A4 (210mm x 297mm)
-        const pageWidth = 210;
-        const pageHeight = 297;
-        const margin = 20;
-        const contentWidth = pageWidth - (2 * margin);
-        const maxContentHeight = pageHeight - (2 * margin) - 20; // Leave space for footer
-        const footerY = pageHeight - 15;
-        
-        let currentPage = 1;
-        let totalPages = 1;
-        let yPosition = 20;
-        
-        // Helper function to check if we need a new page
-        function checkNewPage(requiredHeight) {
-            if (yPosition + requiredHeight > maxContentHeight) {
-                // Add footer to current page
-                addPageFooter(currentPage, totalPages);
+        // Open resume.html in a hidden iframe to generate PDF
+        const iframe = document.createElement('iframe');
+        // Set explicit dimensions even though hidden - helps with layout calculation
+        iframe.style.position = 'absolute';
+        iframe.style.left = '-9999px';
+        iframe.style.width = '1000px';
+        iframe.style.height = '1400px';
+        iframe.style.border = 'none';
+        iframe.src = 'resume.html';
+        document.body.appendChild(iframe);
+
+        // Wait for iframe to load
+        iframe.onload = async function() {
+            console.log('Iframe loaded, waiting for libraries...');
+            try {
+                // Access the iframe's document
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
                 
-                // Add new page
-                doc.addPage();
-                currentPage++;
-                totalPages++;
-                yPosition = 20;
-                return true;
-            }
-            return false;
-        }
-        
-        // Helper function to add page footer
-        function addPageFooter(pageNum, totalPages) {
-            doc.setFontSize(8);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Generated on: ' + new Date().toLocaleDateString(), margin, footerY);
-            doc.text(`Page ${pageNum} of ${totalPages}`, pageWidth - margin - 20, footerY);
-        }
-        
-        // Helper function to add text with proper wrapping and pagination
-        function addText(text, x, y, maxWidth = contentWidth, fontSize = 10, fontStyle = 'normal') {
-            doc.setFontSize(fontSize);
-            doc.setFont('helvetica', fontStyle);
-            const lines = doc.splitTextToSize(text, maxWidth);
-            const lineHeight = fontSize * 0.4;
-            const totalHeight = lines.length * lineHeight;
-            
-            // Check if we need a new page
-            if (checkNewPage(totalHeight)) {
-                // Add text to new page
-                doc.text(lines, x, yPosition);
-                return yPosition + totalHeight;
-            }
-            
-            // Add text to current page
-            doc.text(lines, x, y);
-            return y + totalHeight;
-        }
-        
-        // Helper function to add section header with pagination
-        function addSectionHeader(title, y) {
-            const headerHeight = 8;
-            if (checkNewPage(headerHeight)) {
-                y = yPosition;
-            }
-            
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
-            doc.text(title, margin, y);
-            // Add underline
-            doc.setLineWidth(0.5);
-            doc.line(margin, y + 2, margin + 30, y + 2);
-            return y + headerHeight;
-        }
-        
-        // Helper function to add bullet points with pagination
-        function addBulletPoints(items, startY, fontSize = 9) {
-            let currentY = startY;
-            const lineHeight = fontSize * 0.4;
-            
-            items.forEach(item => {
-                const text = '• ' + item;
-                const lines = doc.splitTextToSize(text, contentWidth - 5);
-                const itemHeight = lines.length * lineHeight;
-                
-                if (checkNewPage(itemHeight)) {
-                    currentY = yPosition;
+                if (!iframeDoc) {
+                    throw new Error('Cannot access iframe document');
                 }
                 
-                doc.setFontSize(fontSize);
-                doc.setFont('helvetica', 'normal');
-                doc.text(lines, margin + 5, currentY);
-                currentY += itemHeight;
-            });
-            
-            return currentY;
-        }
-        
-        // Header Section - ATS Friendly
-        doc.setFontSize(18);
-        doc.setFont('helvetica', 'bold');
-        doc.text('SHIBIN MARIYAN STANLY', margin, yPosition);
-        yPosition += 8;
-        
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Systems Analyst & Full Stack Developer', margin, yPosition);
-        yPosition += 12;
-        
-        // Contact Information - ATS Friendly Format
-        const contactInfo = [
-            'Email: shibinmariyanstanley@gmail.com',
-            'Phone: +91 8075085487',
-            'Location: Trivandrum, Kerala, India',
-            'LinkedIn: linkedin.com/in/shibinmariyanstanly',
-            'GitHub: github.com/shibinmariyan'
-        ];
-        
-        contactInfo.forEach(info => {
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text(info, margin, yPosition);
-            yPosition += 5;
-        });
-        
-        yPosition += 5;
-        
-        // Professional Summary
-        yPosition = addSectionHeader('PROFESSIONAL SUMMARY', yPosition);
-        const summaryText = 'Experienced Systems Analyst and Senior Software Engineer with 6+ years of expertise in MEAN/MERN stack development, AWS cloud services, and full-stack web applications. Proven track record of translating business requirements into technical solutions, leading cross-functional teams, and delivering high-quality software products. Award-winning professional with strong analytical skills and expertise in API development, microservices architecture, and DevOps practices.';
-        yPosition = addText(summaryText, margin, yPosition, contentWidth, 10, 'normal') + 5;
-        
-        // Technical Skills - ATS Friendly
-        yPosition = addSectionHeader('TECHNICAL SKILLS', yPosition);
-        
-        const skillsData = [
-            { category: 'Programming Languages', skills: 'JavaScript, TypeScript, HTML5, CSS3' },
-            { category: 'Frameworks & Libraries', skills: 'React, Angular, Next.js, Node.js, NestJS, Express.js' },
-            { category: 'Cloud & DevOps', skills: 'AWS (Lambda, S3, EC2, EKS, Cognito, SQS), Azure, Docker, CI/CD' },
-            { category: 'Databases', skills: 'MongoDB, PostgreSQL, Redis, IndexedDB' },
-            { category: 'AI & Automation Tools', skills: 'ChatGPT, Claude AI, GitHub Copilot, Automated Testing' },
-            { category: 'Tools & Technologies', skills: 'Git, Nx, JIRA, Microservices, REST API, GraphQL' },
-            { category: 'Methodologies', skills: 'Agile, SDLC, System Analysis, Technical Documentation' }
-        ];
-        
-        skillsData.forEach(skill => {
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'bold');
-            doc.text(skill.category + ':', margin, yPosition);
-            doc.setFont('helvetica', 'normal');
-            doc.text(skill.skills, margin + 40, yPosition);
-            yPosition += 6;
-        });
-        
-        yPosition += 5;
-        
-        // Professional Experience
-        yPosition = addSectionHeader('PROFESSIONAL EXPERIENCE', yPosition);
-        
-        // Current Position
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Systems Analyst', margin, yPosition);
-        doc.setFont('helvetica', 'normal');
-        doc.text('InApp Information Technologies India Pvt Ltd', margin + 35, yPosition);
-        yPosition += 6;
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'italic');
-        doc.text('July 2021 - Present | Trivandrum, Kerala', margin, yPosition);
-        yPosition += 8;
-        
-        const currentJobAchievements = [
-            'Analyzed complex business requirements and translated them into detailed technical specifications and user stories',
-            'Developed and deployed robust REST APIs using Node.js and AWS services (Lambda, S3, EC2)',
-            'Led full-stack development of revolutionary drawing tool application similar to AutoCAD with Google Maps integration',
-            'Built real-time collaborative drawing features using React.js, NestJS, and WebSocket technologies',
-            'Optimized application performance by implementing IndexedDB and PostgreSQL database solutions',
-            'Managed DevOps pipelines using Azure and maintained code quality standards with Nx monorepo',
-            'Collaborated with cross-functional teams to deliver projects on time and within budget',
-            'Achieved Best Employee of the Quarter (Q1 2025) and multiple performance awards'
-        ];
-        
-        yPosition = addBulletPoints(currentJobAchievements, yPosition, 9);
-        yPosition += 5;
-        
-        // Previous Position
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Senior Full Stack Engineer', margin, yPosition);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Mckayne Technologies', margin + 45, yPosition);
-        yPosition += 6;
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'italic');
-        doc.text('June 2020 - June 2021 | Cochin, Kerala', margin, yPosition);
-        yPosition += 8;
-        
-        const prevJobAchievements = [
-            'Led development team in end-to-end application development using MEAN/MERN stack',
-            'Managed server infrastructure and deployment processes using AWS cloud services',
-            'Engaged directly with clients to gather and analyze solution requirements',
-            'Implemented agile methodologies and maintained clear communication with stakeholders',
-            'Developed scalable web applications with modern frontend and backend technologies'
-        ];
-        
-        yPosition = addBulletPoints(prevJobAchievements, yPosition, 9);
-        yPosition += 5;
-        
-        // Earlier Position
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Frontend Developer', margin, yPosition);
-        doc.setFont('helvetica', 'normal');
-        doc.text('MalaLife Pvt Ltd', margin + 35, yPosition);
-        yPosition += 6;
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'italic');
-        doc.text('May 2018 - April 2019 | Bangalore, Karnataka', margin, yPosition);
-        yPosition += 8;
-        
-        const earlyJobAchievements = [
-            'Developed responsive, cross-browser compatible websites using HTML, CSS, and JavaScript',
-            'Contributed to development of key user-facing features and functionality',
-            'Collaborated with design team to implement pixel-perfect UI/UX designs'
-        ];
-        
-        yPosition = addBulletPoints(earlyJobAchievements, yPosition, 9);
-        yPosition += 8;
-        
-        // Key Projects
-        yPosition = addSectionHeader('KEY PROJECTS', yPosition);
-        
-        // MetalTech Project
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text('MetalTech - Drawing Tool Application (2024-2025)', margin, yPosition);
-        yPosition += 6;
-        
-        const metalTechDescription = 'Revolutionary drawing tool application similar to AutoCAD that operates directly on top of Google Maps. Built with React and Nx monorepo architecture, featuring real-time collaborative drawing, precision measurement tools, and seamless map integration for architectural and engineering workflows.';
-        yPosition = addText(metalTechDescription, margin, yPosition, contentWidth, 9, 'normal') + 3;
-        
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Technologies: ', margin, yPosition);
-        doc.setFont('helvetica', 'normal');
-        doc.text('React, Nx, NestJS, PostgreSQL, Google Maps API, Canvas API, Azure', margin + 25, yPosition);
-        yPosition += 8;
-        
-        // Hyphen Project
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Hyphen - Microservices Platform (2021-2024)', margin, yPosition);
-        yPosition += 6;
-        
-        const hyphenDescription = 'Backend development project focusing on robust API development, microservices architecture, and cloud infrastructure. Designed and implemented comprehensive microservices ecosystem handling 50+ API endpoints with 60% performance improvement.';
-        yPosition = addText(hyphenDescription, margin, yPosition, contentWidth, 9, 'normal') + 3;
-        
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Technologies: ', margin, yPosition);
-        doc.setFont('helvetica', 'normal');
-        doc.text('NodeJS, Microservices, AWS, MSSQL, Terraform', margin + 25, yPosition);
-        yPosition += 8;
-        
-        // Education
-        yPosition = addSectionHeader('EDUCATION', yPosition);
-        
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Bachelor of Engineering in Computer Science and Engineering', margin, yPosition);
-        yPosition += 6;
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Anna University, Chennai, Tamil Nadu', margin, yPosition);
-        yPosition += 5;
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'italic');
-        doc.text('June 2014 - May 2018', margin, yPosition);
-        yPosition += 8;
-        
-        // Languages
-        yPosition = addSectionHeader('LANGUAGES', yPosition);
-        
-        const languages = [
-            'English: Fluent',
-            'Malayalam: Native',
-            'Tamil: Conversational'
-        ];
-        
-        yPosition = addBulletPoints(languages, yPosition, 10);
-        yPosition += 5;
-        
-        // Interests
-        yPosition = addSectionHeader('INTERESTS', yPosition);
-        
-        const interests = [
-            'Problem-Solving',
-            'Team Leadership',
-            'Continuous Learning',
-            'Technology Innovation'
-        ];
-        
-        yPosition = addBulletPoints(interests, yPosition, 10);
-        
-        // Add footer to the last page
-        addPageFooter(currentPage, totalPages);
-        
-        // Save the PDF with ATS-friendly filename
-        doc.save('Shibin_Mariyan_Stanly_Resume_ATS.pdf');
-        
-        // Reset button state
-        downloadResumeBtn.innerHTML = originalText;
-        downloadResumeBtn.disabled = false;
-        
-        // Show success message
-        showMessage(`ATS-friendly resume downloaded successfully! (${totalPages} page${totalPages > 1 ? 's' : ''})`, 'success');
+                // Wait for page to fully load and render, and for libraries to load
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Check if downloadPDF function exists
+                if (typeof iframe.contentWindow.downloadPDF === 'function') {
+                    console.log('Calling downloadPDF in iframe...');
+                    // Trigger the download function in the iframe
+                    iframe.contentWindow.downloadPDF();
+                } else {
+                    console.error('downloadPDF function not found in iframe');
+                    throw new Error('downloadPDF function not available');
+                }
+                
+                // Remove iframe after download
+                setTimeout(() => {
+                    if (document.body.contains(iframe)) {
+                        document.body.removeChild(iframe);
+                    }
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Error accessing iframe:', error);
+                // Fallback: open resume.html in new tab
+                alert('Opening resume in new tab. Please click the download button there.');
+                window.open('resume.html', '_blank');
+                if (document.body.contains(iframe)) {
+                    document.body.removeChild(iframe);
+                }
+            }
+        };
+
+        // Fallback timeout
+        setTimeout(() => {
+            if (document.body.contains(iframe)) {
+                document.body.removeChild(iframe);
+            }
+        }, 10000);
         
     } catch (error) {
-        console.error('Error generating PDF:', error);
-        
-        // Reset button state
-        downloadResumeBtn.innerHTML = originalText;
-        downloadResumeBtn.disabled = false;
-        
-        // Show error message
-        showMessage('Error generating PDF. Please try again.', 'error');
+        console.error('Error downloading resume:', error);
+        // Fallback: open resume.html in new tab
+        window.open('resume.html', '_blank');
     }
 }
 
 // Add event listeners for download buttons
-downloadResumeBtn.addEventListener('click', downloadResume);
-downloadResumeHero.addEventListener('click', downloadResume);
-
-// Add event listener for recruiter download button
-const downloadResumeRecruiter = document.getElementById('download-resume-recruiter');
-if (downloadResumeRecruiter) {
-    downloadResumeRecruiter.addEventListener('click', downloadResume);
-}
+document.addEventListener('DOMContentLoaded', function() {
+    const downloadButtons = document.querySelectorAll('[id*="download-resume"]');
+    
+    if (downloadButtons.length === 0) {
+        console.warn('No download resume buttons found');
+    } else {
+        console.log(`Found ${downloadButtons.length} download resume button(s)`);
+    }
+    
+    downloadButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Download resume button clicked');
+            downloadResumePDF();
+        });
+    });
+    
+    // Also add click handlers for buttons with class "download-btn" in nav
+    const navDownloadBtns = document.querySelectorAll('.nav-link.download-btn, .download-btn');
+    navDownloadBtns.forEach(btn => {
+        if (!btn.id || !btn.id.includes('download-resume')) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Nav download button clicked');
+                downloadResumePDF();
+            });
+        }
+    });
+});
 
 // Contact Form Handling
-contactForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
+// Option 1: FormSubmit (Free, no backend needed) - Currently Active
+// Option 2: MailerSend via Backend (Uncomment and configure backend URL)
+if (contactForm) {
+// Enable/disable submit button based on form validity
+const submitBtn = contactForm.querySelector('#submitBtn') || contactForm.querySelector('button[type="submit"]');
+const formInputs = contactForm.querySelectorAll('input[required], textarea[required]');
+
+function checkFormValidity() {
+    let isValid = true;
+    formInputs.forEach(input => {
+        if (!input.value.trim()) {
+            isValid = false;
+        }
+    });
     
-    const formData = new FormData(contactForm);
+    // Check email format
+    const emailInput = contactForm.querySelector('input[type="email"]');
+    if (emailInput && emailInput.value && !emailInput.validity.valid) {
+        isValid = false;
+    }
+    
+    if (submitBtn) {
+        submitBtn.disabled = !isValid;
+    }
+}
+
+// Add event listeners to all form fields
+formInputs.forEach(input => {
+    input.addEventListener('input', checkFormValidity);
+    input.addEventListener('change', checkFormValidity);
+    input.addEventListener('blur', checkFormValidity);
+});
+
+// Initial check
+checkFormValidity();
+contactForm.addEventListener('submit', async function(e) {
     const submitBtn = contactForm.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerHTML;
     
+    // Show loading state
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    submitBtn.disabled = true;
+    
+    // OPTION 1: FormSubmit (Free, currently active) - Let form submit naturally
+    // FormSubmit will handle the submission and redirect back with success parameter
+    // Don't prevent default - let the form submit to FormSubmit
+    
+    // OPTION 2: MailerSend via Backend (Uncomment to use instead of FormSubmit)
+    // Uncomment the code below and comment out the form's action attribute
+    /*
+    e.preventDefault(); // Prevent default form submission
+    
+    const formData = new FormData(contactForm);
+    const name = formData.get('name');
+    const email = formData.get('email');
+    const subject = formData.get('subject');
+    const message = formData.get('message');
+    
     try {
-        // Show loading state
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-        submitBtn.disabled = true;
+        // Replace with your deployed backend URL
+        const backendUrl = 'https://your-backend-url.railway.app/send-email';
+        // Or: 'https://your-backend-url.herokuapp.com/send-email'
+        // Or: 'https://your-backend-url.onrender.com/send-email'
         
-        // Simulate form submission (replace with actual email service)
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        const response = await fetch(backendUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                subject: subject,
+                message: message
+            })
+        });
         
-        // For demo purposes, we'll just show a success message
-        // In a real implementation, you would send the data to your backend
-        showMessage('Thank you for your message! I\'ll get back to you soon.', 'success');
+        const result = await response.json();
         
-        // Reset form
-        contactForm.reset();
-        
+        if (result.success) {
+            showMessage('Thank you! Your message has been sent successfully. I\'ll get back to you soon.', 'success');
+            contactForm.reset();
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+        } else {
+            throw new Error(result.error || 'Failed to send email');
+        }
     } catch (error) {
         console.error('Error sending message:', error);
-        showMessage('Error sending message. Please try again.', 'error');
-    } finally {
-        // Reset button state
+        showMessage('Sorry, there was an error sending your message. Please try again or email me directly at shibinmariyanstanley@gmail.com', 'error');
         submitBtn.innerHTML = originalBtnText;
         submitBtn.disabled = false;
     }
+    */
 });
 
+// Check for success parameter in URL (FormSubmit redirect)
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('success') === 'true') {
+    showMessage('Thank you! Your message has been sent successfully. I\'ll get back to you soon.', 'success');
+    // Clean up URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
+}
+
+/* 
+ * IMPORTANT: MailerSend SMTP Setup
+ * 
+ * For security reasons, SMTP credentials cannot be used directly in frontend JavaScript.
+ * To use MailerSend with your SMTP credentials, you have two options:
+ * 
+ * OPTION 1: Use FormSubmit (Current Implementation - FREE)
+ * - Already configured above
+ * - No setup required
+ * - Works immediately
+ * - Free for 50 submissions/month
+ * 
+ * OPTION 2: Use MailerSend via Backend
+ * To use your MailerSend SMTP credentials securely, you need a backend server:
+ * 
+ * 1. Create a simple backend endpoint (Node.js/PHP/Python)
+ * 2. Use your MailerSend SMTP credentials on the backend
+ * 3. Send POST requests from frontend to your backend
+ * 
+ * Example Node.js backend code:
+ * ```javascript
+ * const nodemailer = require('nodemailer');
+ * 
+ * const transporter = nodemailer.createTransport({
+ *   host: 'smtp.mailersend.net',
+ *   port: 587,
+ *   secure: false,
+ *   auth: {
+ *     user: 'MS_V1EG9m@test-q3enl6kq1kr42vwr.mlsender.net',
+ *     pass: 'mssp.0EX7Spx.neqvygm3j6jl0p7w.8G5QbXS'
+ *   }
+ * });
+ * ```
+ * 
+ * OPTION 3: Use MailerSend API (Recommended)
+ * - Get API token from MailerSend dashboard
+ * - Use MailerSend REST API instead of SMTP
+ * - More secure and designed for transactional emails
+ */
+
 // Show message function
-function showMessage(text, type) {
-    // Remove existing messages
-    const existingMessage = document.querySelector('.message');
-    if (existingMessage) {
-        existingMessage.remove();
+function showMessage(message, type) {
+    // Create message element
+    const messageEl = document.createElement('div');
+    messageEl.className = `message message-${type}`;
+    messageEl.textContent = message;
+    
+    // Style the message
+    messageEl.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 5px;
+        color: white;
+        font-weight: 500;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        max-width: 300px;
+    `;
+    
+    if (type === 'success') {
+        messageEl.style.background = '#4CAF50';
+    } else if (type === 'error') {
+        messageEl.style.background = '#f44336';
     }
     
-    // Create new message
-    const message = document.createElement('div');
-    message.className = `message ${type}`;
-    message.textContent = text;
+    // Add to page
+    document.body.appendChild(messageEl);
     
-    // Insert message at the top of the contact form
-    const contactForm = document.getElementById('contactForm');
-    contactForm.insertBefore(message, contactForm.firstChild);
-    
-    // Auto remove message after 5 seconds
+    // Remove after 5 seconds
     setTimeout(() => {
-        if (message.parentNode) {
-            message.remove();
-        }
+        messageEl.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            document.body.removeChild(messageEl);
+        }, 300);
     }, 5000);
 }
 
@@ -519,11 +371,8 @@ const observer = new IntersectionObserver((entries) => {
 
 // Observe elements for animation
 document.addEventListener('DOMContentLoaded', () => {
-    const animateElements = document.querySelectorAll('.timeline-item, .skill-category, .about-text, .contact-info, .contact-form');
-    animateElements.forEach(el => {
-        el.classList.add('fade-in');
-        observer.observe(el);
-    });
+    const animatedElements = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+    animatedElements.forEach(el => observer.observe(el));
 });
 
 // Typing animation for hero title
@@ -546,9 +395,9 @@ function typeWriter(element, text, speed = 100) {
 document.addEventListener('DOMContentLoaded', () => {
     const heroTitle = document.querySelector('.hero-title');
     if (heroTitle) {
-        const originalText = heroTitle.innerHTML;
+        const originalText = heroTitle.textContent;
         setTimeout(() => {
-            typeWriter(heroTitle, originalText.replace(/<[^>]*>/g, ''), 50);
+            typeWriter(heroTitle, originalText, 50);
         }, 1000);
     }
 });
@@ -556,59 +405,38 @@ document.addEventListener('DOMContentLoaded', () => {
 // Parallax effect for hero section
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
-    if (hero) {
-        hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+    const parallax = document.querySelector('.hero');
+    if (parallax) {
+        const speed = scrolled * 0.5;
+        parallax.style.transform = `translateY(${speed}px)`;
     }
 });
 
 // Scroll-based Skills Animation
-function initSkillsScrollAnimation() {
-    const skillsTrack = document.querySelector('.skills-track');
-    if (!skillsTrack) return;
-    
-    // Clone all skill items for seamless scrolling
-    const skillItems = skillsTrack.querySelectorAll('.skill-item');
-    skillItems.forEach(item => {
-        const clone = item.cloneNode(true);
-        skillsTrack.appendChild(clone);
+function animateSkills() {
+    const skillItems = document.querySelectorAll('.skill-item');
+    skillItems.forEach((item, index) => {
+        setTimeout(() => {
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        }, index * 100);
     });
-    
-    // Add scroll-based animation
-    const skillsContainer = document.querySelector('.skills-scroll-container');
-    if (skillsContainer) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    skillsTrack.style.animationPlayState = 'running';
-                } else {
-                    skillsTrack.style.animationPlayState = 'paused';
-                }
-            });
-        }, { threshold: 0.5 });
-        
-        observer.observe(skillsContainer);
-    }
 }
 
 // Add smooth reveal animation for skill tags
 function animateSkillTags() {
     const skillTags = document.querySelectorAll('.skill-tag');
     skillTags.forEach((tag, index) => {
-        setTimeout(() => {
-            tag.style.opacity = '0';
-            tag.style.transform = 'translateY(20px)';
-            tag.style.transition = 'all 0.3s ease';
-            
             setTimeout(() => {
                 tag.style.opacity = '1';
-                tag.style.transform = 'translateY(0)';
-            }, 100);
+            tag.style.transform = 'scale(1)';
         }, index * 50);
     });
 }
 
 // Trigger skill tag animation when skills section is visible
+const skillsSection = document.querySelector('.skills');
+if (skillsSection) {
 const skillsObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -618,35 +446,18 @@ const skillsObserver = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.5 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const skillsSection = document.querySelector('.skills');
-    if (skillsSection) {
         skillsObserver.observe(skillsSection);
     }
-    
-    // Initialize scroll-based skills animation
-    initSkillsScrollAnimation();
-    
-    // Initialize project filters
-    console.log('Initializing project filters...');
-    initProjectFilters();
-    
-    // Initialize scroll animations
-    initScrollAnimations();
-    
-});
 
 // Add click-to-copy functionality for contact details
 document.addEventListener('DOMContentLoaded', () => {
-    const contactItems = document.querySelectorAll('.contact-item');
+    const contactItems = document.querySelectorAll('.contact-item a');
     contactItems.forEach(item => {
-        item.style.cursor = 'pointer';
-        item.addEventListener('click', () => {
-            const text = item.querySelector('p').textContent;
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const text = this.textContent;
             navigator.clipboard.writeText(text).then(() => {
                 showMessage(`${text} copied to clipboard!`, 'success');
-            }).catch(() => {
-                showMessage('Unable to copy to clipboard', 'error');
             });
         });
     });
@@ -656,13 +467,13 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const timelineItems = document.querySelectorAll('.timeline-item');
     timelineItems.forEach(item => {
-        item.addEventListener('mouseenter', () => {
-            item.style.transform = 'translateX(10px)';
-            item.style.transition = 'transform 0.3s ease';
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(10px)';
+            this.style.transition = 'transform 0.3s ease';
         });
         
-        item.addEventListener('mouseleave', () => {
-            item.style.transform = 'translateX(0)';
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
         });
     });
 });
@@ -671,17 +482,22 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const skillCards = document.querySelectorAll('.skill-category');
     skillCards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const x = e.offsetX;
-            const y = e.offsetY;
-            const rotateY = (-1 / 5) * x + 20;
-            const rotateX = (4 / 30) * y - 20;
-
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+        card.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+            
+            this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         });
-
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'perspective(500px) rotateX(5deg)';
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
         });
     });
 });
@@ -690,20 +506,22 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const profileCard = document.querySelector('.profile-card');
     if (profileCard) {
-        profileCard.addEventListener('mousemove', (e) => {
-            const rect = profileCard.getBoundingClientRect();
+        profileCard.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
+            
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
-            const rotateX = (y - centerY) / 10;
-            const rotateY = (centerX - x) / 10;
 
-            profileCard.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`;
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+
+            this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
         });
 
-        profileCard.addEventListener('mouseleave', () => {
-            profileCard.style.transform = 'perspective(1000px) rotateX(5deg)';
+        profileCard.addEventListener('mouseleave', function() {
+            this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
         });
     }
 });
@@ -728,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Add keyboard navigation support
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        // Close mobile menu if open
+        // Close mobile menu
         hamburger.classList.remove('active');
         navMenu.classList.remove('active');
     }
@@ -738,36 +556,23 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     const focusableElements = document.querySelectorAll('a, button, input, textarea, select');
     focusableElements.forEach(element => {
-        element.addEventListener('focus', () => {
-            element.style.outline = '2px solid #2563eb';
-            element.style.outlineOffset = '2px';
+        element.addEventListener('focus', function() {
+            this.style.outline = '2px solid #3498db';
         });
         
-        element.addEventListener('blur', () => {
-            element.style.outline = 'none';
+        element.addEventListener('blur', function() {
+            this.style.outline = 'none';
         });
     });
 });
 
 // Project Filter Functionality
-function initProjectFilters() {
+document.addEventListener('DOMContentLoaded', () => {
     const filterButtons = document.querySelectorAll('.filter-btn');
     const projectCards = document.querySelectorAll('.project-card');
     
-    console.log('Found filter buttons:', filterButtons.length);
-    console.log('Found project cards:', projectCards.length);
-    
-    // Check if elements exist
-    if (!filterButtons.length || !projectCards.length) {
-        console.warn('Project filter elements not found');
-        return;
-    }
-    
     filterButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            try {
+        button.addEventListener('click', () => {
                 // Remove active class from all buttons
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                 // Add active class to clicked button
@@ -775,94 +580,393 @@ function initProjectFilters() {
                 
                 const filter = button.getAttribute('data-filter');
                 
-                if (!filter) {
-                    console.warn('No filter attribute found on button');
-                    return;
+            projectCards.forEach(card => {
+                if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                    card.style.display = 'block';
+                    card.style.animation = 'fadeIn 0.5s ease';
+                } else {
+                    card.style.display = 'none';
                 }
-                
-                // Filter projects with animation
-                projectCards.forEach((card, index) => {
-                    const category = card.getAttribute('data-category');
-                    
-                    if (filter === 'all' || category === filter) {
-                        // Show project with fade-in animation
-                        setTimeout(() => {
-                            if (card) {
-                                card.classList.remove('hidden', 'fade-out');
-                                card.classList.add('fade-in');
-                            }
-                        }, index * 50); // Reduced stagger for better performance
-                    } else {
-                        // Hide project with fade-out animation
-                        if (card) {
-                            card.classList.add('fade-out');
-                            setTimeout(() => {
-                                if (card) {
-                                    card.classList.add('hidden');
-                                    card.classList.remove('fade-in');
-                                }
-                            }, 200); // Reduced timeout
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error('Error in project filter:', error);
-            }
+            });
         });
     });
-}
+});
 
-// Scroll Animations
-function initScrollAnimations() {
-    // Create intersection observer for fade-in animations
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
+// Scroll Animations with Section Tracking
+document.addEventListener('DOMContentLoaded', () => {
+    const animatedElements = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right');
+    
+    const scrollObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
+                
+                // Track section views
+                const section = entry.target.closest('section');
+                if (section && typeof trackSectionView === 'function') {
+                    const sectionId = section.id || section.className.split(' ')[0];
+                    trackSectionView(sectionId);
+                }
             }
         });
-    }, observerOptions);
-
-    // Observe all elements with animation classes
-    const animatedElements = document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right, .scale-in');
-    animatedElements.forEach(el => {
-        observer.observe(el);
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
     });
+    
+    animatedElements.forEach(element => {
+        scrollObserver.observe(element);
+    });
+});
 
-    // Parallax effect for hero section
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const parallaxElements = document.querySelectorAll('.parallax');
+// AI Chatbot Functionality
+class AIChatbot {
+    constructor() {
+        this.toggle = document.getElementById('aiChatbotToggle');
+        this.chatbot = document.getElementById('aiChatbot');
+        this.messages = document.getElementById('chatbotMessages');
+        this.input = document.getElementById('chatbotInput');
+        this.sendBtn = document.getElementById('sendMessage');
+        this.closeBtn = document.getElementById('closeChatbot');
         
-        parallaxElements.forEach(element => {
-            const speed = element.dataset.speed || 0.5;
-            const yPos = -(scrolled * speed);
-            element.style.transform = `translateY(${yPos}px)`;
-        });
-    });
-
-    // Add hover effects to project cards
-    const projectCards = document.querySelectorAll('.project-card');
-    projectCards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            card.style.transform = 'perspective(1000px) rotateX(0deg) translateY(-10px) scale(1.02)';
+        this.isOpen = false;
+        this.init();
+    }
+    
+    init() {
+        this.toggle.addEventListener('click', () => this.toggleChatbot());
+        this.closeBtn.addEventListener('click', () => this.closeChatbot());
+        this.sendBtn.addEventListener('click', () => this.sendMessage());
+        this.input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.sendMessage();
         });
         
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'perspective(1000px) rotateX(5deg) translateY(0) scale(1)';
-        });
-    });
-
-    // Add floating animation to skill items
-    const skillItems = document.querySelectorAll('.skill-item');
-    skillItems.forEach((item, index) => {
-        item.style.animationDelay = `${index * 0.1}s`;
-        item.classList.add('float-animation');
-    });
+        // Auto-open after 10 seconds
+        setTimeout(() => {
+            if (!this.isOpen) {
+                this.showWelcomeMessage();
+            }
+        }, 10000);
+    }
+    
+    toggleChatbot() {
+        this.isOpen ? this.closeChatbot() : this.openChatbot();
+    }
+    
+    openChatbot() {
+        this.chatbot.style.display = 'flex';
+        this.toggle.classList.add('active');
+        this.isOpen = true;
+        this.input.focus();
+    }
+    
+    closeChatbot() {
+        this.chatbot.style.display = 'none';
+        this.toggle.classList.remove('active');
+        this.isOpen = false;
+    }
+    
+    showWelcomeMessage() {
+        this.toggle.style.animation = 'pulse 2s infinite';
+        setTimeout(() => {
+            this.toggle.style.animation = '';
+        }, 5000);
+    }
+    
+    addMessage(text, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = isUser ? 'user-message' : 'ai-message';
+        messageDiv.textContent = text;
+        this.messages.appendChild(messageDiv);
+        this.messages.scrollTop = this.messages.scrollHeight;
+    }
+    
+    async sendMessage() {
+        const message = this.input.value.trim();
+        if (!message) return;
+        
+        this.addMessage(message, true);
+        this.input.value = '';
+        
+        // Track chatbot usage
+        if (typeof trackChatbotUsage === 'function') {
+            trackChatbotUsage(message, '');
+        }
+        
+        // Show typing indicator
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'ai-message';
+        typingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Thinking...';
+        this.messages.appendChild(typingDiv);
+        
+        // Simulate AI response delay
+        setTimeout(() => {
+            this.messages.removeChild(typingDiv);
+            const response = this.generateResponse(message);
+            this.addMessage(response);
+            
+            // Track response
+            if (typeof trackChatbotUsage === 'function') {
+                trackChatbotUsage(message, response);
+            }
+        }, 1000 + Math.random() * 1000);
+    }
+    
+    generateResponse(message) {
+        const lowerMessage = message.toLowerCase();
+        
+        // Experience and background
+        if (lowerMessage.includes('experience') || lowerMessage.includes('background')) {
+            return "Shibin has 6+ years of experience as a Systems Analyst and Senior Full Stack Developer. He's worked at InApp Information Technologies (current), Mckayne Technologies, and MalaLife Pvt Ltd. At InApp, he architected and developed a sophisticated 2D web-based CAD-like drawing tool using React, Node.js, and Nx monorepo, enabling technical drawings over Google Maps, images, plans, or blank canvases. He implemented complex mathematical algorithms for geometric operations (segment distance calculations, rotation, mirroring, scaling) and developed robust PDF generation functionality. He's an active TMO member conducting code reviews, leads a JavaScript learning community, participates in cultural activities (Aala, CSIR, Elefaanty), and was cricket team captain in 2023. He specializes in MEAN/MERN stack, AWS, Azure, and has won multiple performance awards including Best Employee of the Quarter Q1 2025.";
+        }
+        
+        // Skills
+        if (lowerMessage.includes('skill') || lowerMessage.includes('technology') || lowerMessage.includes('tech')) {
+            return "Shibin's core skills include: JavaScript, Node.js, React, Angular, AWS, Azure, MongoDB, PostgreSQL, Nx Monorepo, Microservices, API Development, Cloud Architecture, DevOps, CI/CD, Shell Script, Systems Analysis, Mathematical Algorithms, PDF Generation, IndexedDB, and Team Leadership. He's also experienced with Docker, NestJS, Express, Python, and complex geometric operations for technical drawing applications.";
+        }
+        
+        // Availability
+        if (lowerMessage.includes('available') || lowerMessage.includes('hiring') || lowerMessage.includes('job')) {
+            return "Shibin is open to new opportunities! He's available for Systems Analyst, Full Stack Developer, and Senior Software Engineer positions. His notice period is 2 months, and he's located in Trivandrum, Kerala, India. He's open to remote and hybrid work opportunities.";
+        }
+        
+        // Projects
+        if (lowerMessage.includes('project') || lowerMessage.includes('work')) {
+            return "Shibin has worked on several impressive projects including MetalTech/CAD-like Drawing Tool (sophisticated 2D web-based drawing application similar to AutoCAD using React, Node.js, Nx monorepo, Azure, and PostgreSQL - features include multi-layer support over Google Maps/images/plans/blank canvas, complex mathematical algorithms for geometric operations like segment distance calculations, rotation, mirroring, scaling, PDF generation, RBAC, drawing optimization, and history management - with 3D capabilities planned), Hyphen (microservices backend with AWS), Kutubi (AI transcription app), DR Connect (healthcare platform), and EventCo (event management). Each project showcases different aspects of his full-stack expertise.";
+        }
+        
+        // Awards
+        if (lowerMessage.includes('award') || lowerMessage.includes('achievement') || lowerMessage.includes('recognition')) {
+            return "Shibin has received multiple awards including Best Employee of the Quarter Q1 2025, Kudos-2, Bravo-1, and Hi5-1 performance awards. These recognize his exceptional work, leadership, and contribution to team success.";
+        }
+        
+        // Leadership
+        if (lowerMessage.includes('leadership') || lowerMessage.includes('team') || lowerMessage.includes('management')) {
+            return "Shibin demonstrates strong leadership through his TMO membership conducting code reviews and cross-project support, leading a JavaScript learning community, active participation in cultural activities (Aala, CSIR, Elefaanty children programs), and serving as cricket team captain in 2023. He combines technical expertise with people management and community building skills.";
+        }
+        
+        // Contact
+        if (lowerMessage.includes('contact') || lowerMessage.includes('reach') || lowerMessage.includes('email')) {
+            return "You can contact Shibin at shibinmariyanstanley@gmail.com or +91 8075085487. He's also active on LinkedIn (linkedin.com/in/shibinmariyanstanly) and GitHub (github.com/shibinmariyan). He's based in Trivandrum, Kerala, India.";
+        }
+        
+        // Salary/Compensation
+        if (lowerMessage.includes('salary') || lowerMessage.includes('compensation') || lowerMessage.includes('pay')) {
+            return "Shibin is looking for competitive compensation as per industry standards. Given his 6+ years of experience, multiple awards, and expertise in modern technologies, he's open to discussing compensation based on the role and company.";
+        }
+        
+        // Default responses
+        const defaultResponses = [
+            "That's a great question! Shibin has extensive experience in full-stack development and systems analysis. Would you like to know more about his specific skills or projects?",
+            "I'd be happy to help! Shibin is a highly skilled developer with 6+ years of experience. What specific aspect of his background interests you most?",
+            "Great question! Shibin is open to new opportunities and has a strong track record. Feel free to ask about his experience, skills, projects, or availability.",
+            "I can tell you more about Shibin's experience, skills, projects, or availability. What would you like to know?"
+        ];
+        
+        return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    }
 }
 
+// Particles.js Animation
+function initParticles() {
+    if (typeof particlesJS !== 'undefined') {
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#ffffff'
+                },
+                shape: {
+                    type: 'circle',
+                    stroke: {
+                        width: 0,
+                        color: '#000000'
+                    }
+                },
+                opacity: {
+                    value: 0.5,
+                    random: false,
+                    anim: {
+                        enable: false,
+                        speed: 1,
+                        opacity_min: 0.1,
+                        sync: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: false,
+                        speed: 40,
+                        size_min: 0.1,
+                        sync: false
+                    }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#ffffff',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 6,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                    attract: {
+                        enable: false,
+                        rotateX: 600,
+                        rotateY: 1200
+                    }
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'repulse'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 400,
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    bubble: {
+                        distance: 400,
+                        size: 40,
+                        duration: 2,
+                        opacity: 8,
+                        speed: 3
+                    },
+                    repulse: {
+                        distance: 200,
+                        duration: 0.4
+                    },
+                    push: {
+                        particles_nb: 4
+                    },
+                    remove: {
+                        particles_nb: 2
+                    }
+                }
+            },
+            retina_detect: true
+        });
+    }
+}
+
+// Update Current Year
+function updateCurrentYear() {
+    const currentYearElement = document.getElementById('current-year');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
+}
+
+// Initialize AI Chatbot when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new AIChatbot();
+    
+    // Initialize Particles.js
+    initParticles();
+    
+    // Update current year
+    updateCurrentYear();
+    
+    // Initialize profile image with fallback
+    initProfileImage();
+});
+
+// Profile image loading with fallback
+function initProfileImage() {
+  const profileImg = document.getElementById('profile-img');
+  if (profileImg) {
+    // Set up error handling for LinkedIn image
+    profileImg.addEventListener('error', function() {
+      console.log('LinkedIn image failed to load, using fallback');
+      this.src = 'assets/images/profile-placeholder.jpg';
+      this.alt = 'Profile Image - Fallback';
+    });
+    
+    // Set up load success handler
+    profileImg.addEventListener('load', function() {
+      console.log('Profile image loaded successfully');
+      this.style.opacity = '1';
+    });
+    
+    // Initial opacity for smooth loading
+    profileImg.style.opacity = '0';
+    profileImg.style.transition = 'opacity 0.3s ease';
+  }
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+    }
+    
+    .fade-in-left {
+        opacity: 0;
+        transform: translateX(-20px);
+        transition: all 0.6s ease;
+    }
+    
+    .fade-in-right {
+        opacity: 0;
+        transform: translateX(20px);
+        transition: all 0.6s ease;
+    }
+    
+    .fade-in.visible,
+    .fade-in-left.visible,
+    .fade-in-right.visible {
+        opacity: 1;
+        transform: translate(0);
+    }
+`;
+document.head.appendChild(style);

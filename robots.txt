@@ -1,30 +1,24 @@
 User-agent: *
 Allow: /
 
-# Sitemap
-Sitemap: https://shibinmariyan.github.io/portfolio/sitemap.xml
+# AI and Web Crawler Optimization
+User-agent: GPTBot
+Allow: /
 
-# Job search crawlers
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Job Board Crawlers
 User-agent: LinkedInBot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-# Job platform crawlers
-User-agent: NaukriBot
-Allow: /
-
-User-agent: MonsterBot
 Allow: /
 
 User-agent: IndeedBot
@@ -36,42 +30,28 @@ Allow: /
 User-agent: ZipRecruiterBot
 Allow: /
 
-# AI Tools and Agents
-User-agent: ChatGPT
+# Social Media Crawlers
+User-agent: facebookexternalhit
 Allow: /
 
-User-agent: Claude
+User-agent: Twitterbot
 Allow: /
 
-User-agent: Bard
+User-agent: WhatsApp
 Allow: /
 
-User-agent: Copilot
+# Search Engine Crawlers
+User-agent: Googlebot
 Allow: /
 
-User-agent: AI-Crawler
+User-agent: Bingbot
 Allow: /
 
-User-agent: RecruiterAI
+User-agent: DuckDuckBot
 Allow: /
 
-User-agent: TalentAI
-Allow: /
+# Sitemap
+Sitemap: https://shibinmariyanstanly.netlify.app/sitemap.xml
 
-User-agent: HiringAI
-Allow: /
-
-User-agent: JobMatchingAI
-Allow: /
-
-User-agent: GPTBot
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: BardBot
-Allow: /
-
-# Crawl delay for better performance
+# Crawl-delay for respectful crawling
 Crawl-delay: 1
