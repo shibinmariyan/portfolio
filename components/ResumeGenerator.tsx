@@ -28,18 +28,13 @@ export default function ResumeGenerator() {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 15;
-    const leftColumnWidth = (pageWidth - 2 * margin) * 0.58; // 58% for left column
-    const rightColumnWidth = (pageWidth - 2 * margin) * 0.38; // 38% for right column
-    const columnGap = (pageWidth - 2 * margin) * 0.04; // 4% gap
-    const rightColumnX = margin + leftColumnWidth + columnGap;
+    const contentWidth = pageWidth - 2 * margin;
     const lineHeight = 5;
     const blue: [number, number, number] = [74, 144, 226]; // #4A90E2
     const gray: [number, number, number] = [100, 100, 100];
-    const lightGray: [number, number, number] = [150, 150, 150];
     const bottomMargin = 20;
 
-    let leftY = margin;
-    let rightY = margin;
+    let currentY = margin;
 
     // Helper: Add text with word wrap
     const addText = (
@@ -58,6 +53,10 @@ export default function ResumeGenerator() {
       const lines = doc.splitTextToSize(text, maxWidth);
 
       lines.forEach((line: string) => {
+        if (y + lineHeight > pageHeight - bottomMargin) {
+          doc.addPage();
+          y = margin;
+        }
         doc.text(line, x, y);
         y += lineHeight;
       });
@@ -72,7 +71,6 @@ export default function ResumeGenerator() {
       if (parts.length < 2) return dateStr;
       const [year, month] = parts;
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      // Check if month is number or string
       const monthIndex = isNaN(parseInt(month))
         ? monthNames.findIndex(m => m.toLowerCase() === month.toLowerCase().substring(0, 3))
         : parseInt(month) - 1;
@@ -80,265 +78,239 @@ export default function ResumeGenerator() {
       return `${monthNames[monthIndex] || month} ${year}`;
     };
 
-    // Helper: Add section header with blue underline
-    const addSectionHeader = (text: string, x: number, y: number, width: number): number => {
+    // Helper: Add section header
+    const addSectionHeader = (text: string, y: number): number => {
+      if (y + 10 > pageHeight - bottomMargin) {
+        doc.addPage();
+        y = margin;
+      }
       doc.setFontSize(11);
       doc.setTextColor(blue[0], blue[1], blue[2]);
       doc.setFont("helvetica", "bold");
-      doc.text(text.toUpperCase(), x, y); // Ensure uppercase
+      doc.text(text.toUpperCase(), margin, y);
 
-      // Blue underline
       doc.setDrawColor(blue[0], blue[1], blue[2]);
       doc.setLineWidth(0.5);
-      doc.line(x, y + 1, x + width, y + 1);
+      doc.line(margin, y + 1, margin + contentWidth, y + 1);
 
       return y + 6;
     };
 
-    // ==================== HEADER SECTION (FULL WIDTH) ====================
-    // Name in blue
+    // ==================== HEADER SECTION ====================
     doc.setFontSize(22);
     doc.setTextColor(blue[0], blue[1], blue[2]);
     doc.setFont("helvetica", "bold");
-    doc.text(portfolioData.personalInfo.name.toUpperCase(), margin, leftY);
-    leftY += 7;
+    doc.text(portfolioData.personalInfo.name.toUpperCase(), margin, currentY);
+    currentY += 7;
 
-    // Title
     doc.setFontSize(11);
     doc.setTextColor(gray[0], gray[1], gray[2]);
-    doc.setFont("helvetica", "bold"); // Bolder title
-    doc.text(portfolioData.personalInfo.title.toUpperCase(), margin, leftY);
-    leftY += 6;
+    doc.setFont("helvetica", "bold");
+    doc.text(portfolioData.personalInfo.title.toUpperCase(), margin, currentY);
+    currentY += 6;
 
-    // Contact Info - Single line if possible or compact 2 lines
     doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
     doc.setFont("helvetica", "normal");
 
-    // Line 1: Email | Phone | Location
     const contactLine1 = `${portfolioData.personalInfo.email}  •  ${portfolioData.personalInfo.phone}  •  ${portfolioData.personalInfo.location}`;
-    doc.text(contactLine1, margin, leftY);
-    leftY += 4;
+    doc.text(contactLine1, margin, currentY);
+    currentY += 4;
 
-    // Line 2: LinkedIn | GitHub | Portfolio
-    const contactLine2 = `${portfolioData.personalInfo.linkedin}  •  github.com/shibinmariyan  •  ${portfolioData.personalInfo.portfolio}`;
-    doc.text(contactLine2, margin, leftY);
-    leftY += 6;
+    // Dynamic GitHub Link
+    const githubLink = portfolioData.personalInfo.socials.find(s => s.name === "Github")?.href.replace("https://", "") || "github.com/shibinmariyan";
+    const contactLine2 = `${portfolioData.personalInfo.linkedin}  •  ${githubLink}  •  ${portfolioData.personalInfo.portfolio}`;
+    doc.text(contactLine2, margin, currentY);
+    currentY += 6;
 
-    // ==================== CORE COMPETENCIES (NEW) ====================
-    leftY = addSectionHeader("CORE COMPETENCIES", margin, leftY, pageWidth - 2 * margin);
-
-    // Use keywords as core competencies, limited to top 12-15 to avoid stuffing
+    // ==================== CORE COMPETENCIES ====================
+    currentY = addSectionHeader("CORE COMPETENCIES", currentY);
     const coreSkills = portfolioData.personalInfo.keywords.slice(0, 15).join("  •  ");
-    leftY = addText(coreSkills, margin, leftY, pageWidth - 2 * margin, 9, false, [0, 0, 0]);
-    leftY += 4;
+    currentY = addText(coreSkills, margin, currentY, contentWidth, 9, false, [0, 0, 0]);
+    currentY += 2; // Extra spacing
 
-    // Professional Summary (full width)
-    leftY = addSectionHeader("PROFESSIONAL SUMMARY", margin, leftY, pageWidth - 2 * margin);
-    leftY = addText(portfolioData.summary, margin, leftY, pageWidth - 2 * margin, 9, false, [0, 0, 0]);
-    leftY += 6;
+    // ==================== TECHNICAL SKILLS (Moved up) ====================
+    currentY = addSectionHeader("TECHNICAL SKILLS", currentY);
+    portfolioData.skillCategories.forEach((cat) => {
+      if (currentY + 10 > pageHeight - bottomMargin) {
+        doc.addPage();
+        currentY = margin;
+      }
+      // Bold Category: Skills
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text(cat.category + ":", margin, currentY);
 
-    // Set starting point for both columns
-    rightY = leftY;
+      const catWidth = doc.getTextWidth(cat.category + ":");
+      doc.setFont("helvetica", "normal");
 
-    // ==================== LEFT COLUMN - EXPERIENCE ====================
-    leftY = addSectionHeader("PROFESSIONAL EXPERIENCE", margin, leftY, leftColumnWidth);
+      // Wrap skills text if needed
+      const skillsText = " " + cat.skills.join(", ");
+      const lines = doc.splitTextToSize(skillsText, contentWidth - catWidth);
+
+      lines.forEach((line: string, index: number) => {
+        if (currentY + 5 > pageHeight - bottomMargin) {
+          doc.addPage();
+          currentY = margin;
+        }
+        doc.text(line, margin + catWidth + (index === 0 ? 0 : 0), currentY + (index * 4));
+      });
+      currentY += (lines.length * 4) + 1;
+    });
+    currentY += 2;
+
+    // ==================== PROFESSIONAL SUMMARY ====================
+    currentY = addSectionHeader("PROFESSIONAL SUMMARY", currentY);
+    currentY = addText(portfolioData.summary, margin, currentY, contentWidth, 9, false, [0, 0, 0]);
+    currentY += 4;
+
+    // ==================== PROFESSIONAL EXPERIENCE ====================
+    currentY = addSectionHeader("PROFESSIONAL EXPERIENCE", currentY);
 
     portfolioData.experience.forEach((exp) => {
-      // Check if we need a new page
-      if (leftY + 35 > pageHeight - bottomMargin) {
+      if (currentY + 30 > pageHeight - bottomMargin) {
         doc.addPage();
-        leftY = margin;
-        rightY = margin;
+        currentY = margin;
       }
 
-      // Job title and company
-      // Format: TITLE (Bold) 
-      // Company | Date | Location (Italic/Gray)
+      // Title (Bold)
+      currentY = addText(exp.position.toUpperCase(), margin, currentY, contentWidth, 10, true, [0, 0, 0]);
 
-      leftY = addText(exp.position.toUpperCase(), margin, leftY, leftColumnWidth, 10, true, [0, 0, 0]);
-
+      // Company | Date | Location
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
       doc.setTextColor(0, 0, 0);
-      doc.text(exp.company, margin, leftY);
+      doc.text(exp.company, margin, currentY);
 
       const dateStr = `${formatDate(exp.startDate)} - ${formatDate(exp.endDate || "Present")}`;
       const widthCompany = doc.getTextWidth(exp.company);
 
       doc.setFont("helvetica", "italic");
       doc.setTextColor(gray[0], gray[1], gray[2]);
-      doc.text(`  |  ${dateStr}`, margin + widthCompany, leftY);
-      leftY += 4; // reduced space
+      doc.text(`  |  ${dateStr}  |  ${exp.location}`, margin + widthCompany, currentY);
+      currentY += 4;
 
-      // Tech Stack Line (New for ATS)
+      // Tech Stack
       // @ts-ignore
       if (exp.techStack && exp.techStack.length > 0) {
+        if (currentY + 5 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
         doc.setFont("helvetica", "bold");
         doc.setFontSize(8);
-        // light blue for tech stack
         doc.setTextColor(blue[0], blue[1], blue[2]);
         // @ts-ignore
-        doc.text(`Stack: ${exp.techStack.join(" • ")}`, margin, leftY);
-        leftY += 4;
+        doc.text(`Stack: ${exp.techStack.join(" • ")}`, margin, currentY);
+        currentY += 4;
       }
 
-      // Achievements
+      // Description
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.setTextColor(0, 0, 0);
-
       exp.description.forEach((achievement) => {
-        if (leftY + 10 > pageHeight - bottomMargin) {
+        if (currentY + 5 > pageHeight - bottomMargin) {
           doc.addPage();
-          leftY = margin;
-          rightY = margin;
+          currentY = margin;
         }
-        // Clean up bullet points to use standard simple bullets
         const cleanText = achievement.replace(/^[•\-\*]\s*/, "");
-        leftY = addText(`• ${cleanText}`, margin, leftY, leftColumnWidth - 3, 9, false, [0, 0, 0]);
+        currentY = addText(`• ${cleanText}`, margin, currentY, contentWidth - 2, 9, false, [0, 0, 0]);
       });
 
-      leftY += 4;
+      currentY += 4;
     });
 
-    // ==================== LEFT COLUMN - PROJECTS (MOVED TO MAIN COLUMN FOR DETAIL) ====================
-    if (leftY + 20 > pageHeight - bottomMargin) {
-      doc.addPage();
-      leftY = margin;
-      rightY = margin;
-    }
-    leftY = addSectionHeader("KEY PROJECTS", margin, leftY, leftColumnWidth);
+    // ==================== KEY PROJECTS ====================
+    if (currentY + 30 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
+    currentY = addSectionHeader("KEY PROJECTS", currentY);
 
-    portfolioData.projects.slice(0, 3).forEach((project) => { // Limit to top 3 detailed projects
-      if (leftY + 25 > pageHeight - bottomMargin) {
+    portfolioData.projects.slice(0, 4).forEach((project) => {
+      if (currentY + 25 > pageHeight - bottomMargin) {
         doc.addPage();
-        leftY = margin;
-        rightY = margin;
+        currentY = margin;
       }
 
-      // Project Name
-      leftY = addText(project.name.toUpperCase(), margin, leftY, leftColumnWidth, 10, true, [0, 0, 0]);
+      // Name | Type | Period
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      doc.text(project.name.toUpperCase(), margin, currentY);
+
+      const nameWidth = doc.getTextWidth(project.name.toUpperCase());
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(9);
+      doc.setTextColor(gray[0], gray[1], gray[2]);
+      doc.text(`  |  ${project.type}  |  ${project.period}`, margin + nameWidth, currentY);
+      currentY += 4;
 
       // Tech Stack
       doc.setFont("helvetica", "italic");
       doc.setFontSize(8);
       doc.setTextColor(blue[0], blue[1], blue[2]);
-      doc.text(project.technologies.join(", "), margin, leftY);
-      leftY += 4;
+      doc.text(project.technologies.join(", "), margin, currentY);
+      currentY += 4;
 
-      // Description (Mocking strict description if array, otherwise using key feature)
+      // Highlights
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.setTextColor(0, 0, 0);
 
       if (project.highlights && project.highlights.length > 0) {
         project.highlights.slice(0, 2).forEach((desc: string) => {
-          leftY = addText(`• ${desc}`, margin, leftY, leftColumnWidth - 2, 9, false, [0, 0, 0]);
+          if (currentY + 5 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
+          currentY = addText(`• ${desc}`, margin, currentY, contentWidth - 2, 9, false, [0, 0, 0]);
         });
       } else if (project.description) {
-        leftY = addText(project.description, margin, leftY, leftColumnWidth, 9, false, [0, 0, 0]);
+        currentY = addText(project.description, margin, currentY, contentWidth, 9, false, [0, 0, 0]);
       }
-      leftY += 3;
+      currentY += 3;
     });
 
-
-    // ==================== RIGHT COLUMN - Start on page 1 ====================
-    // Go back to page 1 to start right column
-    let currentRightPage = 1;
-    doc.setPage(currentRightPage);
-
-    // Calculate where right column starts (after header + summary + core competencies)
-    // Re-calculate exactly to match leftY start
-    // We can just grab the start Y from when we branched off, but simpler to re-calculate:
-    // Name(7) + Title(6) + Contact(4) + Contact(6) + Header(6) + Skills(Height) + Header(6) + Summary(Height)
-    // Actually, we set rightY = leftY BEFORE the Left Column started. 
-    // BUT we need to track that Y. 
-    // Let's rely on the fact that we modify `leftY` sequentially in the header section.
-    // The previous code had `rightY = leftY` at line 119. 
-    // We need to restore that logic. 
-    // Since we are replacing the whole function body, we need to ensure we captured that Y.
-    // Wait, I can't easily capture the *dynamic* Y from the header section in this replacement block 
-    // unless I include the header section in the replacement or have a fixed offset.
-    // My replacement block *includes* the header section (lines 83-117 in original).
-    // So `rightY` IS set correctly at the end of the header section in my replacement.
-
-    // We need to verify where the Right Column starts. In the replacement, I set `rightY = leftY` after summary.
-    // So rightY is at the correct Y to start the right column.
-
-    // ==================== RIGHT COLUMN - SKILLS ====================
-    rightY = addSectionHeader("TECHNICAL SKILLS", rightColumnX, rightY, rightColumnWidth);
-
-    portfolioData.skillCategories.forEach((cat) => {
-      if (rightY + 15 > pageHeight - bottomMargin) {
-        // Page handling logic...
-        if (currentRightPage < doc.internal.pages.length - 1) {
-          currentRightPage++;
-          doc.setPage(currentRightPage);
-        } else {
-          doc.addPage();
-          currentRightPage++;
-        }
-        rightY = margin;
-      }
-      // Clean category title
-      rightY = addText(cat.category.toUpperCase(), rightColumnX, rightY, rightColumnWidth, 9, true, [0, 0, 0]);
-      // Skills
-      rightY = addText(cat.skills.join(", "), rightColumnX, rightY, rightColumnWidth, 8, false, [0, 0, 0]);
-      rightY += 3;
-    });
-
-    // ==================== RIGHT COLUMN - EDUCATION ====================
-    // Moved Education to Right Column for better balance if Experience is long
-    if (rightY + 20 > pageHeight - bottomMargin) {
-      if (currentRightPage < doc.internal.pages.length - 1) {
-        currentRightPage++;
-        doc.setPage(currentRightPage);
-      } else {
-        doc.addPage();
-        currentRightPage++;
-      }
-      rightY = margin;
-    }
-    rightY = addSectionHeader("EDUCATION", rightColumnX, rightY, rightColumnWidth);
+    // ==================== EDUCATION ====================
+    if (currentY + 20 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
+    currentY = addSectionHeader("EDUCATION", currentY);
 
     portfolioData.education.forEach((edu) => {
-      rightY = addText(edu.degree, rightColumnX, rightY, rightColumnWidth, 9, true, [0, 0, 0]);
-      rightY = addText(edu.college, rightColumnX, rightY, rightColumnWidth, 9, false, gray);
+      if (currentY + 10 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(0, 0, 0);
+      doc.text(edu.degree, margin, currentY);
+
+      const degreeWidth = doc.getTextWidth(edu.degree);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(gray[0], gray[1], gray[2]);
+      doc.text(`  |  ${edu.college}`, margin + degreeWidth, currentY);
+
       doc.setFont("helvetica", "italic");
-      doc.setFontSize(8);
-      doc.text(edu.period, rightColumnX, rightY);
-      rightY += 5;
+      doc.text(edu.period, pageWidth - margin - doc.getTextWidth(edu.period), currentY);
+      currentY += 5;
     });
+    currentY += 2;
 
-    rightY += 2;
-
-    // ==================== RIGHT COLUMN - CERTIFICATIONS ====================
-    rightY = addSectionHeader("CERTIFICATIONS", rightColumnX, rightY, rightColumnWidth);
+    // ==================== CERTIFICATIONS & LANGUAGES (Side by Side if space, or linear) ====================
+    // Linear is safer for ATS
+    if (currentY + 20 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
+    currentY = addSectionHeader("CERTIFICATIONS", currentY);
     portfolioData.certifications.forEach((cert) => {
-      rightY = addText(cert, rightColumnX, rightY, rightColumnWidth, 8, false, [0, 0, 0]);
-      rightY -= 2; // Tighter spacing for lists
+      if (currentY + 5 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
+      currentY = addText(`• ${cert}`, margin, currentY, contentWidth, 9, false, [0, 0, 0]);
+      currentY -= 1; // tighter
     });
-    rightY += 4;
+    currentY += 3;
 
-
-    // ==================== RIGHT COLUMN - LANGUAGES ====================
-    if (portfolioData.languages && portfolioData.languages.length > 0) {
-      rightY = addSectionHeader("LANGUAGES", rightColumnX, rightY, rightColumnWidth);
-      portfolioData.languages.forEach((lang) => {
-        // Linear format: Language (Proficiency)
-        const langText = `${lang.name} (${lang.proficiency})`;
-        rightY = addText(langText, rightColumnX, rightY, rightColumnWidth, 9, false, [0, 0, 0]);
-        rightY -= 1;
-      });
-      rightY += 2;
+    // Languages
+    if (currentY + 20 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
+    if (portfolioData.languages) {
+      currentY = addSectionHeader("LANGUAGES", currentY);
+      const langs = portfolioData.languages.map(l => `${l.name} (${l.proficiency})`).join("  •  ");
+      currentY = addText(langs, margin, currentY, contentWidth, 9, false, [0, 0, 0]);
     }
 
-    // ==================== RIGHT COLUMN - INTERESTS ====================
-    // Simple comma separated list
-    if (portfolioData.interests && portfolioData.interests.length > 0) {
-      rightY = addSectionHeader("INTERESTS", rightColumnX, rightY, rightColumnWidth);
-      rightY = addText(portfolioData.interests.join(", "), rightColumnX, rightY, rightColumnWidth, 9, false, [0, 0, 0]);
+    // Interests
+    if (portfolioData.interests) {
+      currentY += 4;
+      currentY = addSectionHeader("INTERESTS", currentY);
+      currentY = addText(portfolioData.interests.join(", "), margin, currentY, contentWidth, 9, false, [0, 0, 0]);
     }
 
     // Save
