@@ -1,7 +1,7 @@
 "use client";
 
 import { portfolioData } from "@/app/data/portfolio";
-import { motion, Variants, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { m, Variants, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import {
   Sparkles,
   Award,
@@ -28,32 +28,32 @@ export default function Skills() {
   return (
     <section id="skills" className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-slate-900 border-t border-neutral-200 dark:border-slate-700">
       <div className="max-w-7xl mx-auto">
-        <motion.div
+        <m.div
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-100px" }}
         >
           <div className="mb-16 text-left">
-            <motion.h2 variants={itemVariants} className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white mb-6">
+            <m.h2 variants={itemVariants} className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white mb-6">
               Expertise
-            </motion.h2>
-            <motion.p variants={itemVariants} className="text-xl text-neutral-500 dark:text-neutral-400 max-w-2xl">
+            </m.h2>
+            <m.p variants={itemVariants} className="text-xl text-neutral-500 dark:text-neutral-400 max-w-2xl">
               A comprehensive toolkit for building scalable, high-performance distributed systems.
-            </motion.p>
+            </m.p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
             {portfolioData.skillCategories.map((category, index) => {
               const Icon = category.icon;
               return (
-                <motion.div
+                <m.div
                   key={index}
                   variants={itemVariants}
                   className="group p-8 bg-white dark:bg-slate-800 rounded-3xl border border-neutral-200 dark:border-slate-700 hover:border-primary-500 dark:hover:border-primary-600 transition-all duration-300 hover:shadow-lg"
                 >
                   <div className="mb-6 flex items-center gap-4">
-                    <motion.div
+                    <m.div
                       className="inline-flex p-4 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 text-white"
                       initial={{ y: 0, scale: 1, rotate: 0 }}
                       whileInView={{
@@ -70,7 +70,7 @@ export default function Skills() {
                       }}
                     >
                       <Icon className="w-8 h-8" />
-                    </motion.div>
+                    </m.div>
                     <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
                       {category.category}
                     </h3>
@@ -85,12 +85,12 @@ export default function Skills() {
                       </span>
                     ))}
                   </div>
-                </motion.div>
+                </m.div>
               );
             })}
           </div>
 
-          <motion.div variants={itemVariants} className="border-t border-neutral-200 dark:border-slate-800 pt-16">
+          <m.div variants={itemVariants} className="border-t border-neutral-200 dark:border-slate-800 pt-16">
             <div className="grid md:grid-cols-12 gap-8 items-start">
               <div className="md:col-span-4">
                 <h3 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">
@@ -133,8 +133,8 @@ export default function Skills() {
                 ))}
               </div>
             </div>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </div>
     </section>
   );

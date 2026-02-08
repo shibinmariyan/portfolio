@@ -1,8 +1,7 @@
 "use client";
 
-import { motion, Variants, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { m, Variants, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Code2, Database, Layers, ExternalLink, Globe, Smartphone } from "lucide-react";
-import Icon3D from "@/components/Icon3D";
 
 interface Project {
   name: string;
@@ -42,7 +41,7 @@ export default function Projects() {
   return (
     <section id="projects" className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-100 dark:bg-slate-900 border-t border-neutral-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto">
-        <motion.div
+        <m.div
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
@@ -51,12 +50,12 @@ export default function Projects() {
         >
           {/* Header */}
           <div className="lg:col-span-12 mb-8">
-            <motion.h2 variants={itemVariants} className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white mb-6">
+            <m.h2 variants={itemVariants} className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white mb-6">
               Selected Work
-            </motion.h2>
-            <motion.p variants={itemVariants} className="text-xl text-neutral-500 dark:text-neutral-400 max-w-2xl">
+            </m.h2>
+            <m.p variants={itemVariants} className="text-xl text-neutral-500 dark:text-neutral-400 max-w-2xl">
               Architectural highlights and engineering challenges solved across different domains.
-            </motion.p>
+            </m.p>
           </div>
 
           {/* Projects Grid */}
@@ -64,14 +63,14 @@ export default function Projects() {
             {portfolioData.projects.map((project, index) => {
               const Icon = iconMap[project.type as keyof typeof iconMap] || Code2;
               return (
-                <motion.div
+                <m.div
                   key={index}
                   variants={itemVariants}
                   className="group relative bg-white dark:bg-slate-800 rounded-3xl p-8 border border-neutral-200 dark:border-slate-700 hover:shadow-xl hover:border-neutral-300 dark:hover:border-slate-600 transition-all duration-300 flex flex-col"
                 >
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-4">
-                      <motion.div
+                      <m.div
                         className="p-3 rounded-2xl bg-neutral-100 dark:bg-slate-700 text-neutral-900 dark:text-white"
                         initial={{ y: 0, scale: 1 }}
                         whileInView={{
@@ -87,7 +86,7 @@ export default function Projects() {
                         }}
                       >
                         <Icon className="w-6 h-6" />
-                      </motion.div>
+                      </m.div>
                       <div>
                         <h3 className="text-2xl font-bold text-neutral-900 dark:text-white leading-tight">
                           {project.name}
@@ -119,11 +118,11 @@ export default function Projects() {
                       </span>
                     ))}
                   </div>
-                </motion.div>
+                </m.div>
               );
             })}
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

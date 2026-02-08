@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins, Raleway } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import MouseFollower from "@/components/MouseFollower";
+import { FramerLazyMotion } from "@/components/FramerLazyMotion";
 import "./globals.scss";
 
 // Next.js font loaders require explicit literals, not variables
@@ -82,8 +83,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.variable} ${raleway.variable} font-poppins`}>
         <ThemeProvider>
-          <MouseFollower />
-          {children}
+          <FramerLazyMotion>
+            <MouseFollower />
+            {children}
+          </FramerLazyMotion>
         </ThemeProvider>
       </body>
     </html>

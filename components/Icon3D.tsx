@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 interface Icon3DProps {
   children: ReactNode;
@@ -12,7 +12,7 @@ interface Icon3DProps {
 
 export default function Icon3D({ children, className = "", depth = 0.3, delay = 0 }: Icon3DProps) {
   return (
-    <motion.div
+    <m.div
       className={className}
       initial={{ y: 0 }}
       animate={{ y: [0, -8, 0] }}
@@ -28,15 +28,15 @@ export default function Icon3D({ children, className = "", depth = 0.3, delay = 
         perspective: "1000px",
       }}
     >
-      <motion.div
+      <m.div
         style={{
           transform: "translateZ(20px)",
           filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.3))",
         }}
       >
         {children}
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }
 

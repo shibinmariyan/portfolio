@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, Variants } from "framer-motion";
+import { m, Variants } from "framer-motion";
 import { ArrowRight, Copy, Check } from "lucide-react";
 import { portfolioData } from "@/app/data/portfolio";
 import { useState } from "react";
@@ -58,7 +58,7 @@ export default function Contact() {
   return (
     <section id="contact" className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-slate-900 border-t border-neutral-200 dark:border-slate-700">
       <div className="max-w-7xl mx-auto">
-        <motion.div
+        <m.div
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
@@ -67,13 +67,13 @@ export default function Contact() {
         >
           {/* Left: Heading */}
           <div>
-            <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">
+            <m.h2 variants={itemVariants} className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">
               Let's Connect
-            </motion.h2>
-            <motion.p variants={itemVariants} className="text-xl text-neutral-600 dark:text-neutral-400 mb-8 leading-relaxed">
+            </m.h2>
+            <m.p variants={itemVariants} className="text-xl text-neutral-600 dark:text-neutral-400 mb-8 leading-relaxed">
               Have a project in mind or want to discuss opportunities? I'd love to hear from you.
-            </motion.p>
-            <motion.a
+            </m.p>
+            <m.a
               variants={itemVariants}
               href="https://www.linkedin.com/in/shibinmariyanstanly/"
               target="_blank"
@@ -81,7 +81,7 @@ export default function Contact() {
               className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-semibold text-lg hover:scale-105 transition-transform"
             >
               Say Hello <ArrowRight className="w-5 h-5" />
-            </motion.a>
+            </m.a>
           </div>
 
           {/* Right: Contact Cards Grid */}
@@ -94,19 +94,18 @@ export default function Contact() {
                 const isCopied = copiedIndex === index;
 
                 return (
-                  <motion.div
+                  <m.div
                     key={index}
                     variants={itemVariants}
                     className={`group relative p-6 rounded-2xl bg-gradient-to-br ${style.bg} ${style.hoverBg} border border-neutral-200 dark:border-neutral-700 hover:shadow-xl transition-all duration-300`}
                   >
                     {/* Icon with Floating Animation */}
-                    <motion.div
+                    <m.div
                       className={`${style.iconBg} p-3 mx-auto rounded-xl w-fit mb-4 shadow-lg`}
                       initial={{ y: 0, scale: 1, rotate: 0 }}
                       whileInView={{
                         y: [0, -10, 0],
                         scale: [1, 1.08, 1],
-                        rotate: [0, 3, 0, -3, 0],
                       }}
                       viewport={{ once: false, margin: "-50px" }}
                       transition={{
@@ -121,7 +120,7 @@ export default function Contact() {
                       }}
                     >
                       <Icon className="w-6 h-6 text-white" />
-                    </motion.div>
+                    </m.div>
 
                     {/* Content */}
                     <div className="mb-4">
@@ -167,11 +166,11 @@ export default function Contact() {
                         {link.name === "Email" ? "Email" : "Open"}
                       </a>
                     </div>
-                  </motion.div>
+                  </m.div>
                 );
               })}
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

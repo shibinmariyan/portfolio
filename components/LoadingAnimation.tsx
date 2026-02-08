@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Code2, Sparkles } from "lucide-react";
 
 const loadingMessages = [
@@ -41,7 +41,7 @@ export default function LoadingAnimation({ onComplete }: { onComplete: () => voi
   return (
     <AnimatePresence>
       {progress < 100 && (
-        <motion.div
+        <m.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
@@ -49,23 +49,23 @@ export default function LoadingAnimation({ onComplete }: { onComplete: () => voi
         >
           <div className="text-center max-w-md px-8">
             {/* Animated Logo */}
-            <motion.div
+            <m.div
               className="relative mb-12"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
               {/* Outer rotating ring */}
-              <motion.div
+              <m.div
                 className="absolute inset-0 flex items-center justify-center"
                 animate={{ rotate: 360 }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
               >
                 <div className="w-32 h-32 rounded-full border-4 border-transparent border-t-primary-500 border-r-secondary-500"></div>
-              </motion.div>
+              </m.div>
 
               {/* Inner pulsing circle */}
-              <motion.div
+              <m.div
                 className="relative flex items-center justify-center w-32 h-32 mx-auto"
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -74,12 +74,12 @@ export default function LoadingAnimation({ onComplete }: { onComplete: () => voi
                 <div className="relative w-20 h-20 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-2xl flex items-center justify-center shadow-xl">
                   <Code2 className="w-10 h-10 text-white" />
                 </div>
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
 
             {/* Loading Message */}
             <AnimatePresence mode="wait">
-              <motion.div
+              <m.div
                 key={currentMessage}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -91,13 +91,13 @@ export default function LoadingAnimation({ onComplete }: { onComplete: () => voi
                   <Sparkles className="w-5 h-5 text-primary-500" />
                   {loadingMessages[currentMessage]}
                 </p>
-              </motion.div>
+              </m.div>
             </AnimatePresence>
 
             {/* Progress Bar */}
             <div className="mb-4">
               <div className="w-full h-2 bg-neutral-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                <motion.div
+                <m.div
                   className="h-full bg-gradient-to-r from-primary-500 via-secondary-500 to-accent-500"
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
@@ -107,15 +107,15 @@ export default function LoadingAnimation({ onComplete }: { onComplete: () => voi
             </div>
 
             {/* Progress Percentage */}
-            <motion.p
+            <m.p
               className="text-neutral-600 dark:text-neutral-400 text-sm font-mono"
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
               {progress}%
-            </motion.p>
+            </m.p>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

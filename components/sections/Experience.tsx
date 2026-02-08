@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { portfolioData } from "@/app/data/portfolio";
-import { motion, useScroll, useTransform, Variants, useReducedMotion } from "framer-motion";
+import { m, useScroll, useTransform, Variants, useReducedMotion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 interface ExperienceItem {
@@ -50,7 +50,7 @@ export default function Experience() {
   return (
     <section id="experience" className="py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-950">
       <div className="max-w-7xl mx-auto">
-        <motion.div
+        <m.div
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
@@ -59,12 +59,12 @@ export default function Experience() {
         >
           {/* Header Column */}
           <div className="lg:col-span-4">
-            <motion.h2 variants={itemVariants} className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white mb-6">
+            <m.h2 variants={itemVariants} className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white mb-6">
               Experience
-            </motion.h2>
-            <motion.p variants={itemVariants} className="text-xl text-neutral-500 dark:text-neutral-400 max-w-sm">
+            </m.h2>
+            <m.p variants={itemVariants} className="text-xl text-neutral-500 dark:text-neutral-400 max-w-sm">
               A timeline of my professional journey and technical leadership.
-            </motion.p>
+            </m.p>
           </div>
 
           {/* List Column */}
@@ -75,8 +75,8 @@ export default function Experience() {
               const dateString = `${formatDate(startDate)} — ${endDate ? formatDate(endDate) : "Present"}`;
 
               return (
-                <motion.div key={index} variants={itemVariants} className="group relative pl-8 border-l border-neutral-200 dark:border-neutral-700 hover:border-primary-500 transition-colors duration-300">
-                  <motion.div
+                <m.div key={index} variants={itemVariants} className="group relative pl-8 border-l border-neutral-200 dark:border-neutral-700 hover:border-primary-500 transition-colors duration-300">
+                  <m.div
                     className="absolute -left-1.5 top-0 w-3 h-3 rounded-full bg-neutral-200 dark:bg-neutral-700 group-hover:bg-primary-500 transition-colors duration-300"
                     initial={{ scale: 1, boxShadow: "0 0 0 0px rgba(59, 130, 246, 0)" }}
                     whileInView={{
@@ -125,11 +125,11 @@ export default function Experience() {
                       </li>
                     ))}
                   </ul>
-                </motion.div>
+                </m.div>
               );
             })}
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

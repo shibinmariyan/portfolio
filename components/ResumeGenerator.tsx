@@ -4,7 +4,7 @@ import { useState } from "react";
 import jsPDF from "jspdf";
 import { Download } from "lucide-react";
 import { portfolioData } from "@/app/data/portfolio";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 type PageSize = "a4" | "letter" | "legal";
 
@@ -341,7 +341,8 @@ export default function ResumeGenerator() {
   };
 
   return (
-    <motion.button
+
+    <m.button
       onClick={generateResume}
       className="glass-hover px-6 py-3 rounded-full text-secondary-700 dark:text-secondary-300 font-semibold transition-all flex items-center gap-2 group relative overflow-hidden"
       initial={{ y: 0, scale: 1 }}
@@ -363,19 +364,19 @@ export default function ResumeGenerator() {
       whileTap={{ scale: 0.95 }}
     >
       {/* Background Gradient on Hover */}
-      <motion.div
+      <m.div
         className="absolute inset-0 bg-gradient-to-r from-primary-400/20 to-secondary-400/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         initial={{ opacity: 0 }}
         whileHover={{ opacity: 1 }}
       />
 
-      <motion.div
+      <m.div
         whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.2 }}
         transition={{ duration: 0.5 }}
       >
         <Download className="w-5 h-5 relative z-10" />
-      </motion.div>
+      </m.div>
       <span className="relative z-10">Download Resume</span>
-    </motion.button>
+    </m.button>
   );
 }

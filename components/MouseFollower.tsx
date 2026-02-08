@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { m, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useEffect } from "react";
 
 export default function MouseFollower() {
@@ -26,13 +26,13 @@ export default function MouseFollower() {
   return (
     <>
       {/* Main Cursor Dot */}
-      <motion.div
+      <m.div
         className="fixed top-0 left-0 w-8 h-8 rounded-full border-2 border-primary-500 pointer-events-none z-[9999] mix-blend-difference hidden md:block"
         style={{ x, y }}
       />
 
       {/* Secondary Trailing Dot */}
-      <motion.div
+      <m.div
         className="fixed top-0 left-0 w-2 h-2 rounded-full bg-accent-500 pointer-events-none z-[9999] hidden md:block"
         style={{
           x: useSpring(mouseX, { ...springConfig, damping: 25, mass: 0.8 }), // Slightly laggier
