@@ -111,6 +111,18 @@ export const portfolioData = {
         location: "Trivandrum, Kerala, India",
         linkedin: "linkedin.com/in/shibinmariyanstanly",
         portfolio: "shibinmariyan.github.io/portfolio",
+        keywords: [
+            "Senior Full Stack Developer",
+            "System Analyst",
+            "Microservices",
+            "AI Platforms",
+            "React",
+            "Node.js",
+            "AWS",
+            "Next.js",
+            "TypeScript",
+            "Software Architect"
+        ],
         socials: [
             {
                 name: "Email",

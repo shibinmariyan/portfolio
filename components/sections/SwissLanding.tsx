@@ -183,7 +183,7 @@ export default function SwissLanding() {
                             {/* Stack Overflow */}
                             <a href="https://stackoverflow.com/users/9638885/shibin-mariyan" target="_blank" rel="noopener noreferrer">
                                 <m.div variants={itemVariants} className="p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors cursor-pointer h-full">
-                                    <div className="text-2xl font-bold text-[#C45A00] dark:text-[#F48024]">
+                                    <div className="text-2xl font-bold text-orange-700 dark:text-[#F48024]">
                                         {portfolioData.personalInfo.socialStats?.stackoverflow.reputation || "3.2k+"}
                                     </div>
                                     <div className="text-xs text-neutral-600 dark:text-neutral-400 flex items-center gap-1">
@@ -195,7 +195,7 @@ export default function SwissLanding() {
                             {/* GitLab */}
                             <a href="#" target="_blank" rel="noopener noreferrer"> {/* Update with actual GitLab link if available */}
                                 <m.div variants={itemVariants} className="p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors cursor-pointer h-full">
-                                    <div className="text-2xl font-bold text-[#C43C00] dark:text-[#FC6D26]">
+                                    <div className="text-2xl font-bold text-orange-800 dark:text-[#FC6D26]">
                                         {portfolioData.personalInfo.socialStats?.gitlab?.activeRepos || "82"}
                                     </div>
                                     <div className="text-xs text-neutral-600 dark:text-neutral-400">
