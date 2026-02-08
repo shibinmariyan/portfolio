@@ -1,0 +1,36 @@
+@use "./mixins" as *;
+
+@layer utilities {
+  .glass {
+    @include glass(0.1, 10px, 0.2);
+  }
+
+  .dark .glass {
+    @include glass-dark(0.2, 10px, 0.1);
+  }
+
+  .glass-strong {
+    @include glass(0.15, 20px, 0.3);
+  }
+
+  .dark .glass-strong {
+    @include glass-dark(0.3, 20px, 0.15);
+  }
+
+  .glass-dark {
+    @include glass-dark(0.1, 10px, 0.1);
+  }
+
+  .glass-card {
+    @include glass(0.25, 16px, 0.3);
+  }
+
+  .dark .glass-card {
+    @include glass-dark(0.4, 16px, 0.2);
+  }
+
+  .glass-hover {
+    @include glass-hover(0.3, 0.5);
+  }
+}
+

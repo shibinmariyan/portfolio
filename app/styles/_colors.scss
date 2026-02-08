@@ -1,0 +1,40 @@
+@use "./variables" as *;
+
+// Generate CSS variables for light theme
+:root {
+  @each $shade, $color in $primary-colors {
+    --color-primary-#{$shade}: #{$color};
+  }
+
+  @each $shade, $color in $secondary-colors {
+    --color-secondary-#{$shade}: #{$color};
+  }
+
+  @each $shade, $color in $accent-colors {
+    --color-accent-#{$shade}: #{$color};
+  }
+
+  @each $shade, $color in $neutral-colors {
+    --color-neutral-#{$shade}: #{$color};
+  }
+}
+
+// Generate CSS variables for dark theme
+.dark {
+  @each $shade, $color in $primary-colors-dark {
+    --color-primary-#{$shade}: #{$color};
+  }
+
+  @each $shade, $color in $secondary-colors-dark {
+    --color-secondary-#{$shade}: #{$color};
+  }
+
+  @each $shade, $color in $accent-colors-dark {
+    --color-accent-#{$shade}: #{$color};
+  }
+
+  @each $shade, $color in $neutral-colors-dark {
+    --color-neutral-#{$shade}: #{$color};
+  }
+}
+

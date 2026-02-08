@@ -1,0 +1,14 @@
+// @use rules MUST come before any other rules (including @tailwind)
+@use "./styles/variables" as *;
+@use "./styles/colors";
+@use "./styles/mixins" as *;
+@use "./styles/base";
+@use "./styles/glass";
+@use "./styles/scrollbar";
+@use "./styles/envelope";
+
+// Tailwind directives come after @use
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+

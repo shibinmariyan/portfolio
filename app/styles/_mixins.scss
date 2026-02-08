@@ -1,0 +1,62 @@
+// Glassmorphism Mixins
+@mixin glass($opacity: 0.1, $blur: 10px, $border-opacity: 0.2) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid rgba(255, 255, 255, $border-opacity);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+@mixin glass-dark($opacity: 0.2, $blur: 10px, $border-opacity: 0.1) {
+  background: rgba(0, 0, 0, $opacity);
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+  border: 1px solid rgba(255, 255, 255, $border-opacity);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+@mixin glass-hover($light-opacity: 0.3, $dark-opacity: 0.5) {
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, $light-opacity);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
+  }
+
+  .dark & {
+    &:hover {
+      background: rgba(0, 0, 0, $dark-opacity);
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7);
+    }
+  }
+}
+
+// Transition Mixin
+@mixin transition($properties...) {
+  transition: $properties 0.3s ease;
+}
+
+// Responsive Mixins
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == sm {
+    @media (min-width: 640px) {
+      @content;
+    }
+  } @else if $breakpoint == md {
+    @media (min-width: 768px) {
+      @content;
+    }
+  } @else if $breakpoint == lg {
+    @media (min-width: 1024px) {
+      @content;
+    }
+  } @else if $breakpoint == xl {
+    @media (min-width: 1280px) {
+      @content;
+    }
+  }
+}
+

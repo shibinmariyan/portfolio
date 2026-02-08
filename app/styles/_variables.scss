@@ -1,0 +1,122 @@
+// Color Variables - Modern Swiss / Bento Theme
+$primary-colors: (
+  50: #f0f9ff,
+  100: #e0f2fe,
+  200: #bae6fd,
+  300: #7dd3fc,
+  400: #38bdf8,
+  500: #0ea5e9,
+  600: #0284c7, // Vibrant Blue
+  700: #0369a1,
+  800: #075985,
+  900: #0c4a6e, // Deep Navy
+  950: #082f49,
+);
+
+$secondary-colors: (
+  50: #f0fdfa,
+  100: #ccfbf1,
+  200: #99f6e4,
+  300: #5eead4,
+  400: #2dd4bf,
+  500: #14b8a6, // Teal
+  600: #0d9488,
+  700: #0f766e,
+  800: #115e59,
+  900: #134e4a,
+  950: #042f2e,
+);
+
+$accent-colors: (
+  50: #f5f3ff,
+  100: #ede9fe,
+  200: #ddd6fe,
+  300: #c4b5fd,
+  400: #a78bfa,
+  500: #8b5cf6, // Violet
+  600: #7c3aed,
+  700: #6d28d9,
+  800: #5b21b6,
+  900: #4c1d95,
+  950: #2e1065,
+);
+
+$neutral-colors: (
+  50: #f8fafc,
+  100: #f1f5f9,
+  200: #e2e8f0,
+  300: #cbd5e1, // Slate
+  400: #94a3b8,
+  500: #64748b,
+  600: #475569,
+  700: #334155,
+  800: #1e293b,
+  900: #0f172a, // Very Dark Slate
+  950: #020617,
+);
+
+// Dark Theme Colors (Inverted bases for better contrast)
+$primary-colors-dark: (
+  50: #082f49,
+  100: #0c4a6e,
+  200: #075985,
+  300: #0369a1,
+  400: #0284c7,
+  500: #0ea5e9,
+  600: #38bdf8,
+  700: #7dd3fc,
+  800: #bae6fd,
+  900: #e0f2fe,
+  950: #f0f9ff,
+);
+
+$secondary-colors-dark: (
+  50: #042f2e,
+  100: #134e4a,
+  200: #115e59,
+  300: #0f766e,
+  400: #0d9488,
+  500: #14b8a6,
+  600: #2dd4bf,
+  700: #5eead4,
+  800: #99f6e4,
+  900: #ccfbf1,
+  950: #f0fdfa,
+);
+
+$accent-colors-dark: (
+  50: #2e1065,
+  100: #4c1d95,
+  200: #5b21b6,
+  300: #6d28d9,
+  400: #7c3aed,
+  500: #8b5cf6,
+  600: #a78bfa,
+  700: #c4b5fd,
+  800: #ddd6fe,
+  900: #ede9fe,
+  950: #f5f3ff,
+);
+
+$neutral-colors-dark: (
+  50: #020617,
+  100: #0f172a,
+  200: #1e293b,
+  300: #334155,
+  400: #475569,
+  500: #64748b,
+  600: #94a3b8,
+  700: #cbd5e1,
+  800: #e2e8f0,
+  900: #f1f5f9,
+  950: #f8fafc,
+);
+
+// Helper function to generate CSS variables
+@function generate-color-vars($colors, $prefix) {
+  $vars: ();
+  @each $shade, $color in $colors {
+    $vars: map-merge($vars, (#{"--color-" + $prefix + "-" + $shade}: $color));
+  }
+  @return $vars;
+}
