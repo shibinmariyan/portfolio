@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { portfolioData } from "@/app/data/portfolio";
+import RecruiterSummary from "@/components/RecruiterSummary";
 
 const ResumeGenerator = dynamic(() => import("@/components/ResumeGenerator"), {
     loading: () => <button className="px-6 py-3 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse">Loading...</button>,
@@ -103,6 +104,8 @@ export default function SwissLanding() {
                             </a>
                             <ResumeGenerator />
                         </m.div>
+
+                        <RecruiterSummary />
 
                         {/* About Section */}
                         <m.div variants={itemVariants}>

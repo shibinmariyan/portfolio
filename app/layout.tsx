@@ -70,13 +70,13 @@ export default function RootLayout({
       "@type": "Organization",
       name: portfolioData.experience[0].company,
     },
-    description: portfolioData.summary,
+    description: `${portfolioData.summary} Open to opportunities in ${portfolioData.personalInfo.preferredLocations.join(", ")}.`,
     knowsAbout: portfolioData.skillCategories.flatMap((cat) => cat.skills),
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Trivandrum",
-      addressRegion: "Kerala",
-      addressCountry: "India",
+      addressLocality: portfolioData.personalInfo.address.city,
+      addressRegion: portfolioData.personalInfo.address.region,
+      addressCountry: portfolioData.personalInfo.address.country,
     },
   };
 

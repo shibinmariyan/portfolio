@@ -103,6 +103,11 @@ export default function ResumeGenerator() {
     leftY += 4;
     const linksLine = `${portfolioData.personalInfo.linkedin} | github.com/shibinmariyan`;
     doc.text(linksLine, margin, leftY);
+    leftY += 4;
+
+    // Preferred Locations
+    const locLine = `Preferred Locations: ${portfolioData.personalInfo.preferredLocations.join(", ")}`;
+    doc.text(locLine, margin, leftY);
     leftY += 6;
 
     // Professional Summary (full width)
@@ -337,7 +342,9 @@ export default function ResumeGenerator() {
 
     // Save the PDF
     const formattedDate = new Date().toISOString().split('T')[0];
-    doc.save(`Shibin_Mariyan_Stanly_Resume_${formattedDate}.pdf`);
+    const roleSlug = portfolioData.personalInfo.title.split(' & ')[0].replace(/\s+/g, '_'); // "Systems_Analyst"
+    const filename = `${portfolioData.personalInfo.firstName}_${portfolioData.personalInfo.middleName}_${portfolioData.personalInfo.lastName}_${roleSlug}_Resume.pdf`;
+    doc.save(filename);
   };
 
   return (

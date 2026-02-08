@@ -110,8 +110,15 @@ export const portfolioData = {
         email: "shibinmariyanstanley@gmail.com",
         phone: "+91 8075085487",
         location: "Trivandrum, Kerala, India",
+        address: {
+            city: "Trivandrum",
+            region: "Kerala",
+            country: "India",
+        },
+        preferredLocations: ["Bangalore", "Kochi", "Trivandrum"],
         linkedin: "linkedin.com/in/shibinmariyanstanly",
         portfolio: "shibinmariyan.github.io/portfolio",
+        availability: "Immediate Joiner",
         keywords: [
             "Senior Full Stack Developer",
             "React Developer",

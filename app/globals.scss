@@ -12,3 +12,23 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@media print {
+  nav,
+  button,
+  footer,
+  #mouse-follower,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
