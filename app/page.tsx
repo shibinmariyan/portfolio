@@ -8,7 +8,6 @@ import Projects from "@/components/sections/Projects";
 import Skills from "@/components/sections/Skills";
 import Contact from "@/components/sections/Contact";
 import LoadingAnimation from "@/components/LoadingAnimation";
-import MouseFollower from "@/components/MouseFollower";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
