@@ -32,6 +32,7 @@ const experience = [
             "Provided technical leadership within the Technical Management Office (TMO), conducting architectural reviews, code reviews, and mentoring.",
             "Recognized as 'Best Employee of the Quarter (Q1 2025)' and recipient of multiple excellence awards (Kudos, Bravo, Hi5).",
         ],
+        techStack: ["React", "Node.js", "AWS Lambda", "TypeScript", "Nx Monorepo", "PostgreSQL", "Microservices", "Azure", "CI/CD"]
     },
     {
         company: "Mckayne Technologies",
@@ -45,6 +46,7 @@ const experience = [
             "Managed cloud infrastructure and deployment strategies on AWS for high availability.",
             "Led technical decision-making and architectural planning for scalable system design.",
         ],
+        techStack: ["React", "Node.js", "MongoDB", "Express", "AWS", "MERN Stack", "System Design"]
     },
     {
         company: "NDimensionZ Solutions Private Limited",
@@ -55,9 +57,9 @@ const experience = [
         duration: "11 months",
         description: [
             "Developed robust RESTful APIs to handle core business logic.",
-            "Automated routine system maintenance using complex shell scripts.",
             "Generated data-driven reports and analytics for strategic decision-making.",
         ],
+        techStack: ["Node.js", "MongoDB", "Shell Scripting", "Jupyter", "AWS Automation", "AWS EC2"]
     },
     {
         company: "MalaLife Pvt Ltd",
@@ -71,6 +73,7 @@ const experience = [
             "Developed key user-facing modules including compatibility analysis algorithms.",
             "Focused on UI/UX optimization, improving user engagement and navigation.",
         ],
+        techStack: ["Angular", "TypeScript", "ag-Grid", "HTML5", "CSS3", "JavaScript"]
     },
 ];
 
@@ -199,7 +202,7 @@ export const portfolioData = {
         "Expert in building real-time collaborative systems, implementing LLM-powered automation, and designing scalable cloud architectures on AWS and Azure. Passionate about creating intuitive user experiences backed by robust engineering.",
         "As a Technical Lead, I set high engineering standards, architect complex systems, and mentor developers to build robust, scalable solutions. I focus on clean code architecture, performance optimization, and driving technical excellence across the stack."
     ],
-    summary: `Experienced Systems Analyst and Senior Full Stack Developer with ${getExperienceYears()} years of expertise in MEAN/MERN stack, AWS, Azure, and modern web technologies. Best Employee Award Winner who architected sophisticated solutions including a CAD-like 2D web-based drawing tool, AI-powered healthcare CRM, and interactive EdTech platforms. Proven track record of delivering innovative, compliance-focused web applications across diverse industries including healthcare (PIPEDA/HIPAA), education, construction, fintech, and event management. Specialized in AI/LLM integration, event-driven architectures, and scalable cloud solutions.`,
+    summary: `Senior Full Stack Developer & Systems Analyst with ${getExperienceYears()} years of expertise architecting scalable enterprise solutions. Proficient in the MERN stack (MongoDB, Express.js, React, Node.js), AWS Serverless (Lambda, SQS), and Microservices. Proven track record of delivering AI-powered healthcare platforms (PIPEDA/HIPAA), precision CAD engines, and interactive EdTech solutions. Expert in TypeScript, Next.js, and Cloud Infrastructure (AWS/Azure), driving performance optimization and digital transformation for global clients.`,
     experience,
     projects: [
         {

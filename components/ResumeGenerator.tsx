@@ -169,7 +169,19 @@ export default function ResumeGenerator() {
       doc.setFont("helvetica", "italic");
       doc.setTextColor(gray[0], gray[1], gray[2]);
       doc.text(`  |  ${dateStr}`, margin + widthCompany, leftY);
-      leftY += 5;
+      leftY += 4; // reduced space
+
+      // Tech Stack Line (New for ATS)
+      // @ts-ignore
+      if (exp.techStack && exp.techStack.length > 0) {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8);
+        // light blue for tech stack
+        doc.setTextColor(blue[0], blue[1], blue[2]);
+        // @ts-ignore
+        doc.text(`Stack: ${exp.techStack.join(" • ")}`, margin, leftY);
+        leftY += 4;
+      }
 
       // Achievements
       doc.setFont("helvetica", "normal");
