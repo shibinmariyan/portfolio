@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next";
+import { portfolioData } from "@/app/data/portfolio";
 
 export default function robots(): MetadataRoute.Robots {
     return {
@@ -7,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: "/",
             disallow: "/private/",
         },
-        sitemap: "https://shibinmariyan.github.io/portfolio/sitemap.xml",
+        sitemap: `https://${portfolioData.personalInfo.portfolio}/sitemap.xml`,
     };
 }

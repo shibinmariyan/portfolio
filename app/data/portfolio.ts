@@ -118,7 +118,7 @@ export const portfolioData = {
         preferredLocations: ["Bangalore", "Kochi", "Trivandrum"],
         linkedin: "linkedin.com/in/shibinmariyanstanly",
         portfolio: "shibinmariyan.github.io/portfolio",
-        availability: "Immediate Joiner",
+        availability: "Actively Seeking",
         keywords: [
             "Senior Full Stack Developer",
             "React Developer",
