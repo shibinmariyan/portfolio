@@ -65,12 +65,27 @@ export default function ResumeGenerator() {
       return y;
     };
 
+    // Helper: Format date to "Mon YYYY"
+    const formatDate = (dateStr: string): string => {
+      if (!dateStr || dateStr.toLowerCase() === 'present') return "Present";
+      const parts = dateStr.split('-');
+      if (parts.length < 2) return dateStr;
+      const [year, month] = parts;
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      // Check if month is number or string
+      const monthIndex = isNaN(parseInt(month))
+        ? monthNames.findIndex(m => m.toLowerCase() === month.toLowerCase().substring(0, 3))
+        : parseInt(month) - 1;
+
+      return `${monthNames[monthIndex] || month} ${year}`;
+    };
+
     // Helper: Add section header with blue underline
     const addSectionHeader = (text: string, x: number, y: number, width: number): number => {
-      doc.setFontSize(12);
+      doc.setFontSize(11);
       doc.setTextColor(blue[0], blue[1], blue[2]);
       doc.setFont("helvetica", "bold");
-      doc.text(text, x, y);
+      doc.text(text.toUpperCase(), x, y); // Ensure uppercase
 
       // Blue underline
       doc.setDrawColor(blue[0], blue[1], blue[2]);
@@ -85,35 +100,43 @@ export default function ResumeGenerator() {
     doc.setFontSize(22);
     doc.setTextColor(blue[0], blue[1], blue[2]);
     doc.setFont("helvetica", "bold");
-    doc.text(portfolioData.personalInfo.name, margin, leftY);
+    doc.text(portfolioData.personalInfo.name.toUpperCase(), margin, leftY);
     leftY += 7;
 
     // Title
     doc.setFontSize(11);
     doc.setTextColor(gray[0], gray[1], gray[2]);
-    doc.setFont("helvetica", "normal");
-    doc.text(portfolioData.personalInfo.title, margin, leftY);
+    doc.setFont("helvetica", "bold"); // Bolder title
+    doc.text(portfolioData.personalInfo.title.toUpperCase(), margin, leftY);
     leftY += 6;
 
-    // Contact Info
+    // Contact Info - Single line if possible or compact 2 lines
     doc.setFontSize(9);
     doc.setTextColor(0, 0, 0);
-    const contactLine = `${portfolioData.personalInfo.email} | ${portfolioData.personalInfo.phone} | ${portfolioData.personalInfo.location}`;
-    doc.text(contactLine, margin, leftY);
-    leftY += 4;
-    const linksLine = `${portfolioData.personalInfo.linkedin} | github.com/shibinmariyan`;
-    doc.text(linksLine, margin, leftY);
+    doc.setFont("helvetica", "normal");
+
+    // Line 1: Email | Phone | Location
+    const contactLine1 = `${portfolioData.personalInfo.email}  •  ${portfolioData.personalInfo.phone}  •  ${portfolioData.personalInfo.location}`;
+    doc.text(contactLine1, margin, leftY);
     leftY += 4;
 
-    // Preferred Locations
-    const locLine = `Preferred Locations: ${portfolioData.personalInfo.preferredLocations.join(", ")}`;
-    doc.text(locLine, margin, leftY);
+    // Line 2: LinkedIn | GitHub | Portfolio
+    const contactLine2 = `${portfolioData.personalInfo.linkedin}  •  github.com/shibinmariyan  •  ${portfolioData.personalInfo.portfolio}`;
+    doc.text(contactLine2, margin, leftY);
     leftY += 6;
+
+    // ==================== CORE COMPETENCIES (NEW) ====================
+    leftY = addSectionHeader("CORE COMPETENCIES", margin, leftY, pageWidth - 2 * margin);
+
+    // Use keywords as core competencies, limited to top 12-15 to avoid stuffing
+    const coreSkills = portfolioData.personalInfo.keywords.slice(0, 15).join("  •  ");
+    leftY = addText(coreSkills, margin, leftY, pageWidth - 2 * margin, 9, false, [0, 0, 0]);
+    leftY += 4;
 
     // Professional Summary (full width)
     leftY = addSectionHeader("PROFESSIONAL SUMMARY", margin, leftY, pageWidth - 2 * margin);
     leftY = addText(portfolioData.summary, margin, leftY, pageWidth - 2 * margin, 9, false, [0, 0, 0]);
-    leftY += 4;
+    leftY += 6;
 
     // Set starting point for both columns
     rightY = leftY;
@@ -130,15 +153,22 @@ export default function ResumeGenerator() {
       }
 
       // Job title and company
-      leftY = addText(`${exp.position}`, margin, leftY, leftColumnWidth, 11, true, [0, 0, 0]);
-      leftY = addText(exp.company, margin, leftY, leftColumnWidth, 10, false, [0, 0, 0]);
+      // Format: TITLE (Bold) 
+      // Company | Date | Location (Italic/Gray)
 
-      // Date and location
-      doc.setFont("helvetica", "italic");
+      leftY = addText(exp.position.toUpperCase(), margin, leftY, leftColumnWidth, 10, true, [0, 0, 0]);
+
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
-      doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
-      const dateRange = `${exp.startDate} - ${exp.endDate || "Present"} | ${exp.location}`;
-      doc.text(dateRange, margin, leftY);
+      doc.setTextColor(0, 0, 0);
+      doc.text(exp.company, margin, leftY);
+
+      const dateStr = `${formatDate(exp.startDate)} - ${formatDate(exp.endDate || "Present")}`;
+      const widthCompany = doc.getTextWidth(exp.company);
+
+      doc.setFont("helvetica", "italic");
+      doc.setTextColor(gray[0], gray[1], gray[2]);
+      doc.text(`  |  ${dateStr}`, margin + widthCompany, leftY);
       leftY += 5;
 
       // Achievements
@@ -152,99 +182,84 @@ export default function ResumeGenerator() {
           leftY = margin;
           rightY = margin;
         }
-        leftY = addText(`• ${achievement}`, margin, leftY, leftColumnWidth - 3, 9, false, [0, 0, 0]);
+        // Clean up bullet points to use standard simple bullets
+        const cleanText = achievement.replace(/^[•\-\*]\s*/, "");
+        leftY = addText(`• ${cleanText}`, margin, leftY, leftColumnWidth - 3, 9, false, [0, 0, 0]);
       });
 
-      leftY += 3;
+      leftY += 4;
     });
 
-    // ==================== LEFT COLUMN - EDUCATION ====================
+    // ==================== LEFT COLUMN - PROJECTS (MOVED TO MAIN COLUMN FOR DETAIL) ====================
     if (leftY + 20 > pageHeight - bottomMargin) {
       doc.addPage();
       leftY = margin;
       rightY = margin;
     }
-    leftY = addSectionHeader("EDUCATION", margin, leftY, leftColumnWidth);
+    leftY = addSectionHeader("KEY PROJECTS", margin, leftY, leftColumnWidth);
 
-    portfolioData.education.forEach((edu) => {
-      if (leftY + 15 > pageHeight - bottomMargin) {
+    portfolioData.projects.slice(0, 3).forEach((project) => { // Limit to top 3 detailed projects
+      if (leftY + 25 > pageHeight - bottomMargin) {
         doc.addPage();
         leftY = margin;
         rightY = margin;
       }
-      leftY = addText(edu.degree, margin, leftY, leftColumnWidth, 10, true, [0, 0, 0]);
-      leftY = addText(edu.college, margin, leftY, leftColumnWidth, 9, false, gray);
 
+      // Project Name
+      leftY = addText(project.name.toUpperCase(), margin, leftY, leftColumnWidth, 10, true, [0, 0, 0]);
+
+      // Tech Stack
       doc.setFont("helvetica", "italic");
       doc.setFontSize(8);
-      doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
-      doc.text(edu.period, margin, leftY);
-      leftY += 6;
-    });
+      doc.setTextColor(blue[0], blue[1], blue[2]);
+      doc.text(project.technologies.join(", "), margin, leftY);
+      leftY += 4;
 
-    // ==================== LEFT COLUMN - CERTIFICATIONS ====================
-    if (leftY + 15 > pageHeight - bottomMargin) {
-      doc.addPage();
-      leftY = margin;
-      rightY = margin;
-    }
-    leftY = addSectionHeader("CERTIFICATIONS", margin, leftY, leftColumnWidth);
+      // Description (Mocking strict description if array, otherwise using key feature)
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(0, 0, 0);
 
-    portfolioData.certifications.forEach((cert) => {
-      if (leftY + 6 > pageHeight - bottomMargin) {
-        doc.addPage();
-        leftY = margin;
-        rightY = margin;
+      if (project.highlights && project.highlights.length > 0) {
+        project.highlights.slice(0, 2).forEach((desc: string) => {
+          leftY = addText(`• ${desc}`, margin, leftY, leftColumnWidth - 2, 9, false, [0, 0, 0]);
+        });
+      } else if (project.description) {
+        leftY = addText(project.description, margin, leftY, leftColumnWidth, 9, false, [0, 0, 0]);
       }
-      leftY = addText(`• ${cert}`, margin, leftY, leftColumnWidth, 9, false, [0, 0, 0]);
+      leftY += 3;
     });
+
 
     // ==================== RIGHT COLUMN - Start on page 1 ====================
     // Go back to page 1 to start right column
     let currentRightPage = 1;
     doc.setPage(currentRightPage);
 
-    // Calculate where right column starts (after header)
-    let headerHeight = margin + 7 + 6 + 4 + 4; // Name + title + contact lines
-    // Add summary section height
-    const summaryLines = doc.splitTextToSize(portfolioData.summary, pageWidth - 2 * margin);
-    headerHeight += 6 + (summaryLines.length * lineHeight) + 4; // Section header + text + spacing
+    // Calculate where right column starts (after header + summary + core competencies)
+    // Re-calculate exactly to match leftY start
+    // We can just grab the start Y from when we branched off, but simpler to re-calculate:
+    // Name(7) + Title(6) + Contact(4) + Contact(6) + Header(6) + Skills(Height) + Header(6) + Summary(Height)
+    // Actually, we set rightY = leftY BEFORE the Left Column started. 
+    // BUT we need to track that Y. 
+    // Let's rely on the fact that we modify `leftY` sequentially in the header section.
+    // The previous code had `rightY = leftY` at line 119. 
+    // We need to restore that logic. 
+    // Since we are replacing the whole function body, we need to ensure we captured that Y.
+    // Wait, I can't easily capture the *dynamic* Y from the header section in this replacement block 
+    // unless I include the header section in the replacement or have a fixed offset.
+    // My replacement block *includes* the header section (lines 83-117 in original).
+    // So `rightY` IS set correctly at the end of the header section in my replacement.
 
-    rightY = headerHeight;
-
-    // ==================== RIGHT COLUMN - ACHIEVEMENTS ====================
-    rightY = addSectionHeader("KEY ACHIEVEMENTS", rightColumnX, rightY, rightColumnWidth);
-
-    portfolioData.achievements.forEach((achievement) => {
-      if (rightY + 8 > pageHeight - bottomMargin) {
-        if (currentRightPage < doc.internal.pages.length - 1) {
-          currentRightPage++;
-          doc.setPage(currentRightPage);
-        } else {
-          doc.addPage();
-          currentRightPage++;
-        }
-        rightY = margin;
-      }
-      rightY = addText(`• ${achievement}`, rightColumnX, rightY, rightColumnWidth, 9, false, [0, 0, 0]);
-    });
-    rightY += 3;
+    // We need to verify where the Right Column starts. In the replacement, I set `rightY = leftY` after summary.
+    // So rightY is at the correct Y to start the right column.
 
     // ==================== RIGHT COLUMN - SKILLS ====================
-    if (rightY + 15 > pageHeight - bottomMargin) {
-      if (currentRightPage < doc.internal.pages.length - 1) {
-        currentRightPage++;
-        doc.setPage(currentRightPage);
-      } else {
-        doc.addPage();
-        currentRightPage++;
-      }
-      rightY = margin;
-    }
     rightY = addSectionHeader("TECHNICAL SKILLS", rightColumnX, rightY, rightColumnWidth);
 
     portfolioData.skillCategories.forEach((cat) => {
-      if (rightY + 12 > pageHeight - bottomMargin) {
+      if (rightY + 15 > pageHeight - bottomMargin) {
+        // Page handling logic...
         if (currentRightPage < doc.internal.pages.length - 1) {
           currentRightPage++;
           doc.setPage(currentRightPage);
@@ -254,13 +269,16 @@ export default function ResumeGenerator() {
         }
         rightY = margin;
       }
-      rightY = addText(`${cat.category}:`, rightColumnX, rightY, rightColumnWidth, 9, true, [0, 0, 0]);
+      // Clean category title
+      rightY = addText(cat.category.toUpperCase(), rightColumnX, rightY, rightColumnWidth, 9, true, [0, 0, 0]);
+      // Skills
       rightY = addText(cat.skills.join(", "), rightColumnX, rightY, rightColumnWidth, 8, false, [0, 0, 0]);
-      rightY += 2;
+      rightY += 3;
     });
 
-    // ==================== RIGHT COLUMN - PROJECTS ====================
-    if (rightY + 15 > pageHeight - bottomMargin) {
+    // ==================== RIGHT COLUMN - EDUCATION ====================
+    // Moved Education to Right Column for better balance if Experience is long
+    if (rightY + 20 > pageHeight - bottomMargin) {
       if (currentRightPage < doc.internal.pages.length - 1) {
         currentRightPage++;
         doc.setPage(currentRightPage);
@@ -270,80 +288,51 @@ export default function ResumeGenerator() {
       }
       rightY = margin;
     }
-    rightY = addSectionHeader("KEY PROJECTS", rightColumnX, rightY, rightColumnWidth);
+    rightY = addSectionHeader("EDUCATION", rightColumnX, rightY, rightColumnWidth);
 
-    portfolioData.projects.forEach((project) => {
-      if (rightY + 15 > pageHeight - bottomMargin) {
-        if (currentRightPage < doc.internal.pages.length - 1) {
-          currentRightPage++;
-          doc.setPage(currentRightPage);
-        } else {
-          doc.addPage();
-          currentRightPage++;
-        }
-        rightY = margin;
-      }
-      rightY = addText(`${project.name}`, rightColumnX, rightY, rightColumnWidth, 9, true, [0, 0, 0]);
-      rightY = addText(project.technologies.join(", "), rightColumnX, rightY, rightColumnWidth, 8, false, lightGray);
-      rightY += 2;
+    portfolioData.education.forEach((edu) => {
+      rightY = addText(edu.degree, rightColumnX, rightY, rightColumnWidth, 9, true, [0, 0, 0]);
+      rightY = addText(edu.college, rightColumnX, rightY, rightColumnWidth, 9, false, gray);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.text(edu.period, rightColumnX, rightY);
+      rightY += 5;
     });
+
+    rightY += 2;
+
+    // ==================== RIGHT COLUMN - CERTIFICATIONS ====================
+    rightY = addSectionHeader("CERTIFICATIONS", rightColumnX, rightY, rightColumnWidth);
+    portfolioData.certifications.forEach((cert) => {
+      rightY = addText(cert, rightColumnX, rightY, rightColumnWidth, 8, false, [0, 0, 0]);
+      rightY -= 2; // Tighter spacing for lists
+    });
+    rightY += 4;
+
 
     // ==================== RIGHT COLUMN - LANGUAGES ====================
     if (portfolioData.languages && portfolioData.languages.length > 0) {
-      if (rightY + 15 > pageHeight - bottomMargin) {
-        if (currentRightPage < doc.internal.pages.length - 1) {
-          currentRightPage++;
-          doc.setPage(currentRightPage);
-        } else {
-          doc.addPage();
-          currentRightPage++;
-        }
-        rightY = margin;
-      }
       rightY = addSectionHeader("LANGUAGES", rightColumnX, rightY, rightColumnWidth);
-
       portfolioData.languages.forEach((lang) => {
-        if (rightY + 8 > pageHeight - bottomMargin) {
-          if (currentRightPage < doc.internal.pages.length - 1) {
-            currentRightPage++;
-            doc.setPage(currentRightPage);
-          } else {
-            doc.addPage();
-            currentRightPage++;
-          }
-          rightY = margin;
-        }
-        rightY = addText(lang.name, rightColumnX, rightY, rightColumnWidth, 9, false, [0, 0, 0]);
-
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(8);
-        doc.setTextColor(blue[0], blue[1], blue[2]);
-        doc.text(lang.proficiency, rightColumnX, rightY);
-        rightY += 5;
+        // Linear format: Language (Proficiency)
+        const langText = `${lang.name} (${lang.proficiency})`;
+        rightY = addText(langText, rightColumnX, rightY, rightColumnWidth, 9, false, [0, 0, 0]);
+        rightY -= 1;
       });
       rightY += 2;
     }
 
     // ==================== RIGHT COLUMN - INTERESTS ====================
+    // Simple comma separated list
     if (portfolioData.interests && portfolioData.interests.length > 0) {
-      if (rightY + 10 > pageHeight - bottomMargin) {
-        if (currentRightPage < doc.internal.pages.length - 1) {
-          currentRightPage++;
-          doc.setPage(currentRightPage);
-        } else {
-          doc.addPage();
-          currentRightPage++;
-        }
-        rightY = margin;
-      }
       rightY = addSectionHeader("INTERESTS", rightColumnX, rightY, rightColumnWidth);
-      rightY = addText(portfolioData.interests.join(" • "), rightColumnX, rightY, rightColumnWidth, 9, false, [0, 0, 0]);
+      rightY = addText(portfolioData.interests.join(", "), rightColumnX, rightY, rightColumnWidth, 9, false, [0, 0, 0]);
     }
 
-    // Save the PDF
-    const formattedDate = new Date().toISOString().split('T')[0];
-    const roleSlug = portfolioData.personalInfo.title.split(' & ')[0].replace(/\s+/g, '_'); // "Systems_Analyst"
-    const filename = `${portfolioData.personalInfo.firstName}_${portfolioData.personalInfo.middleName}_${portfolioData.personalInfo.lastName}_${roleSlug}_Resume.pdf`;
+    // Save
+    const formattedDateFile = new Date().toISOString().split('T')[0];
+    const roleSlug = portfolioData.personalInfo.title.split(' & ')[0].replace(/\s+/g, '_');
+    const filename = `${portfolioData.personalInfo.firstName}_${portfolioData.personalInfo.lastName}_${roleSlug}_Resume.pdf`;
     doc.save(filename);
   };
 

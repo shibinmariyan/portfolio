@@ -201,10 +201,10 @@ export default function SwissLanding() {
                                     className="block h-full"
                                 >
                                     <div className="p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors cursor-pointer h-full">
-                                        <div className="text-2xl font-bold text-orange-700 dark:text-[#F48024]">
+                                        <div className="text-2xl font-bold text-orange-800 dark:text-[#F48024]">
                                             {portfolioData.personalInfo.socialStats?.stackoverflow.reputation || "3.2k+"}
                                         </div>
-                                        <div className="text-xs text-neutral-600 dark:text-neutral-400 flex items-center gap-1">
+                                        <div className="text-xs text-orange-900/70 dark:text-neutral-400 flex items-center gap-1 font-medium">
                                             Stack Overflow
                                         </div>
                                     </div>
@@ -219,10 +219,10 @@ export default function SwissLanding() {
                                     className="block h-full"
                                 >
                                     <div className="p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors cursor-pointer h-full">
-                                        <div className="text-2xl font-bold text-orange-800 dark:text-[#FC6D26]">
+                                        <div className="text-2xl font-bold text-orange-900 dark:text-[#FC6D26]">
                                             {portfolioData.personalInfo.socialStats?.gitlab?.activeRepos || "82"}
                                         </div>
-                                        <div className="text-xs text-neutral-600 dark:text-neutral-400">
+                                        <div className="text-xs text-orange-900/70 dark:text-neutral-400 font-medium">
                                             Contributions
                                         </div>
                                     </div>
