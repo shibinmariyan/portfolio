@@ -22,7 +22,7 @@ export default function Skills() {
   };
 
   return (
-    <section id="skills" className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 border-t border-neutral-200">
+    <section id="skills" className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-slate-900 border-t border-neutral-200 dark:border-slate-700">
       <div className="max-w-7xl mx-auto">
         <motion.div
           variants={containerVariants}
@@ -49,7 +49,7 @@ export default function Skills() {
                   className="p-8 rounded-3xl bg-neutral-100 border border-neutral-200 hover:border-neutral-300 transition-colors"
                 >
                   <div className="mb-6 flex items-center gap-4">
-                    <div className="p-3 bg-white rounded-2xl shadow-sm">
+                    <div className="p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-sm">
                       <Icon className="w-6 h-6 text-neutral-900" />
                     </div>
                     <h3 className="text-xl font-bold text-neutral-900">
@@ -60,7 +60,7 @@ export default function Skills() {
                     {category.skills.map((skill, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1.5 text-sm font-medium rounded-lg bg-white border border-neutral-200 text-neutral-600"
+                        className="px-3 py-1.5 text-sm font-medium rounded-lg bg-white dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 text-neutral-600 dark:text-neutral-300"
                       >
                         {skill}
                       </span>
@@ -107,7 +107,7 @@ export default function Skills() {
                       <h4 className="text-lg font-bold text-neutral-900">{edu.degree}</h4>
                       <p className="text-neutral-600">{edu.college}</p>
                     </div>
-                    <span className="px-3 py-1 bg-white rounded-full text-sm font-mono text-neutral-500 whitespace-nowrap border border-neutral-200">
+                    <span className="px-3 py-1 bg-white dark:bg-slate-800 rounded-full text-sm font-mono text-neutral-500 dark:text-neutral-400 whitespace-nowrap border border-neutral-200 dark:border-slate-700">
                       {edu.period}
                     </span>
                   </div>

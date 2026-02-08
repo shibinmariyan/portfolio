@@ -6,7 +6,7 @@
   }
 
   .dark .glass {
-    @include glass-dark(0.2, 10px, 0.1);
+    @include glass-dark(0.1, 10px, 0.05);
   }
 
   .glass-strong {
@@ -14,7 +14,7 @@
   }
 
   .dark .glass-strong {
-    @include glass-dark(0.3, 20px, 0.15);
+    @include glass-dark(0.15, 20px, 0.1);
   }
 
   .glass-dark {
@@ -26,11 +26,10 @@
   }
 
   .dark .glass-card {
-    @include glass-dark(0.4, 16px, 0.2);
+    @include glass-dark(0.15, 16px, 0.05);
   }
 
   .glass-hover {
     @include glass-hover(0.3, 0.5);
   }
 }
-

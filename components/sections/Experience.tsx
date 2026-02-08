@@ -46,7 +46,7 @@ export default function Experience() {
   };
 
   return (
-    <section id="experience" className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 border-t border-neutral-200">
+    <section id="experience" className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-slate-900 border-t border-neutral-200 dark:border-slate-700">
       <div className="max-w-7xl mx-auto">
         <motion.div
           variants={containerVariants}

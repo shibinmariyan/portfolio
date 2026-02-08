@@ -1,12 +1,29 @@
 "use client";
 
+import { useState } from "react";
 import jsPDF from "jspdf";
 import { Download } from "lucide-react";
 import { portfolioData } from "@/app/data/portfolio";
 
+type PageSize = "a4" | "letter" | "legal";
+
 export default function ResumeGenerator() {
+  const [pageSize, setPageSize] = useState<PageSize>("a4");
+
   const generateResume = () => {
-    const doc = new jsPDF();
+    // Configure page size
+    const pageFormats: Record<PageSize, [number, number]> = {
+      a4: [210, 297],      // A4: 210mm × 297mm
+      letter: [215.9, 279.4], // Letter: 8.5" × 11"
+      legal: [215.9, 355.6],  // Legal: 8.5" × 14"
+    };
+
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: pageFormats[pageSize],
+    });
+
     let yPos = 20;
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 20;
@@ -139,7 +156,8 @@ export default function ResumeGenerator() {
     });
 
     // Save the PDF
-    doc.save("Shibin_Mariyan_Stanly_Resume.pdf");
+    const formattedDate = new Date().toISOString().split('T')[0];
+    doc.save(`Shibin_Mariyan_Stanly_Resume_${formattedDate}.pdf`);
   };
 
   return (

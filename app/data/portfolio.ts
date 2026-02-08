@@ -7,13 +7,12 @@ import {
     Sparkles,
     Users,
     Award,
-    Mail,
-    MessageCircle,
     Phone,
-    Linkedin,
     Github,
     Globe
 } from "lucide-react";
+import { FaWhatsapp, FaLinkedin } from "react-icons/fa";
+import { SiGmail } from "react-icons/si";
 
 export const portfolioData = {
     personalInfo: {
@@ -29,14 +28,14 @@ export const portfolioData = {
                 name: "Email",
                 value: "shibinmariyanstanley@gmail.com",
                 href: "mailto:shibinmariyanstanley@gmail.com",
-                icon: Mail,
-                color: "text-neutral-900 dark:text-white",
+                icon: SiGmail,
+                color: "text-red-600 dark:text-red-400",
             },
             {
                 name: "WhatsApp",
                 value: "+91 8075085487",
                 href: "https://wa.me/918075085487",
-                icon: MessageCircle,
+                icon: FaWhatsapp,
                 color: "text-green-600 dark:text-green-400",
             },
             {
@@ -48,9 +47,9 @@ export const portfolioData = {
             },
             {
                 name: "LinkedIn",
-                value: "Connect",
+                value: "shibinmariyanstanly",
                 href: "https://www.linkedin.com/in/shibinmariyanstanly",
-                icon: Linkedin,
+                icon: FaLinkedin,
                 color: "text-blue-600 dark:text-blue-400",
             },
             {
@@ -69,7 +68,7 @@ export const portfolioData = {
             }
         ]
     },
-    summary: `Experienced Systems Analyst and Senior Full Stack Developer with 7+ years of expertise in MEAN/MERN stack, AWS, Azure, and modern web technologies. Best Employee Award Winner who architected and developed a sophisticated CAD-like 2D web-based drawing tool (similar to AutoCAD). Proven track record of delivering innovative web-based solutions across diverse industries including healthcare, construction, fintech, and event management.`,
+    summary: `Experienced Systems Analyst and Senior Full Stack Developer with 7+ years of expertise in MEAN/MERN stack, AWS, Azure, and modern web technologies. Best Employee Award Winner who architected sophisticated solutions including a CAD-like 2D web-based drawing tool, AI-powered healthcare CRM, and interactive EdTech platforms. Proven track record of delivering innovative, compliance-focused web applications across diverse industries including healthcare (PIPEDA/HIPAA), education, construction, fintech, and event management. Specialized in AI/LLM integration, event-driven architectures, and scalable cloud solutions.`,
     experience: [
         {
             company: "InApp Information Technologies India Pvt Ltd",
@@ -100,7 +99,7 @@ export const portfolioData = {
             description: [
                 "Spearheaded end-to-end development of the company's digital platform using MERN/MEAN stack.",
                 "Managed cloud infrastructure and deployment strategies on AWS for high availability.",
-                "Bridged the gap between technical teams and stakeholders using Agile methodologies.",
+                "Led technical decision-making and architectural planning for scalable system design.",
             ],
         },
         {
@@ -136,13 +135,40 @@ export const portfolioData = {
             type: "Full Stack",
             period: "2024 - Ongoing",
             description:
-                "A high-precision 2D CAD engine enabling technical overlays on geospatial data. Designed to bridge the gap between GIS and engineering design.",
+                "A high-precision 2D CAD engine built on Google Maps, enabling technical drawing overlays with CAD operations on geospatial data. Combines mapping with professional CAD drawing tools.",
             highlights: [
-                "Architected React-based CAD engine with custom Canvas API rendering.",
-                "Engineered proprietary mathematical layer for geometric operations.",
-                "Designed robust state management using IndexedDB for offline capabilities.",
+                "Architected React-based CAD engine with Google Maps integration and Canvas API rendering.",
+                "Implemented DPR (Device Pixel Ratio) logic for real-time drawing synchronization across responsive screens.",
+                "Built comprehensive CAD toolset with geometric operations on map-based backgrounds.",
+                "Designed robust state management using IndexedDB for offline drawing capabilities.",
             ],
-            technologies: ["React", "Node.js", "Nx", "PostgreSQL", "Azure", "Canvas API"],
+            technologies: ["React", "Node.js", "Nx", "PostgreSQL", "Azure", "Google Maps API", "Canvas API"],
+        },
+        {
+            name: "Kutubi",
+            type: "Full Stack",
+            period: "2023 - 2024",
+            description:
+                "Interactive student learning application featuring synchronized audio-text highlighting for EPUB-based storybooks. Enhances reading comprehension through multi-sensory learning.",
+            highlights: [
+                "Engineered real-time text highlighting synchronized with AWS Polly audio narration.",
+                "Built EPUB parser and automated audio extraction pipeline.",
+                "Implemented enterprise-grade RBAC with AWS Cognito and Organizations.",
+            ],
+            technologies: ["React", "Node.js", "EPUB", "AWS Polly", "AWS Lambda", "S3", "PostgreSQL", "Redis", "Cognito"],
+        },
+        {
+            name: "Speech4All",
+            type: "Full Stack",
+            period: "2022 - 2023",
+            description:
+                "Comprehensive CRM and practice management platform for Canadian speech therapists. Features AI-powered clinical report generation, appointment scheduling, and payment tracking.",
+            highlights: [
+                "Architected PIPEDA-compliant platform with secure patient data handling and privacy controls.",
+                "Integrated LLM models to auto-generate medical-grade reports from behavioral assessments.",
+                "Built full-featured CRM with payment tracking and consultation management.",
+            ],
+            technologies: ["React", "NestJS", "AWS", "PostgreSQL", "AWS SQS", "LLM", "AI Integration"],
         },
         {
             name: "Hyphen Solutions",
@@ -208,22 +234,22 @@ export const portfolioData = {
         {
             category: "Cloud & DevOps",
             icon: Cloud,
-            skills: ["AWS", "Azure", "Docker", "K8s", "CI/CD", "Serverless", "IaC"],
+            skills: ["AWS", "Azure", "Docker", "CI/CD", "Serverless", "AWS SQS", "AWS Polly"],
         },
         {
             category: "Data & Security",
             icon: Database,
-            skills: ["PostgreSQL", "MongoDB", "Redis", "Auth0", "Cognito", "Azure B2C", "RBAC"],
+            skills: ["PostgreSQL", "MongoDB", "Redis", "Auth0", "Cognito", "Azure B2C", "RBAC", "PIPEDA/HIPAA"],
         },
         {
             category: "AI & Tools",
             icon: Sparkles,
-            skills: ["AI Integration", "Prompt Eng", "Cursor/Copilot", "Claude/GPT", "JIRA", "Git Flow"],
+            skills: ["LLM Integration", "AI Integration", "Prompt Eng", "Cursor/Copilot", "Claude/GPT", "JIRA", "Git Flow"],
         },
         {
             category: "Leadership",
             icon: Users,
-            skills: ["Tech Management", "System Analysis", "Mentorship", "Agile/Scrum", "Code Reviews"],
+            skills: ["Tech Management", "System Analysis", "Mentorship", "Delivery Management", "Code Reviews"],
         },
     ],
     education: [

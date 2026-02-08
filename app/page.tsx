@@ -7,6 +7,7 @@ import Experience from "@/components/sections/Experience";
 import Projects from "@/components/sections/Projects";
 import Skills from "@/components/sections/Skills";
 import Contact from "@/components/sections/Contact";
+import Footer from "@/components/Footer";
 import LoadingAnimation from "@/components/LoadingAnimation";
 
 export default function Home() {
@@ -23,9 +24,9 @@ export default function Home() {
           <Projects />
           <Skills />
           <Contact />
+          <Footer />
         </>
       )}
     </main>
   );
 }
-

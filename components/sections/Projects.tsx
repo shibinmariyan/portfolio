@@ -64,7 +64,7 @@ export default function Projects() {
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  className="group relative bg-white rounded-3xl p-8 border border-neutral-200 hover:shadow-xl hover:border-neutral-300 transition-all duration-300 flex flex-col"
+                  className="group relative bg-white dark:bg-slate-800 rounded-3xl p-8 border border-neutral-200 dark:border-slate-700 hover:shadow-xl hover:border-neutral-300 dark:hover:border-slate-600 transition-all duration-300 flex flex-col"
                 >
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-4">
