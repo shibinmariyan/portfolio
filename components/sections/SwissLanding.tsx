@@ -79,9 +79,9 @@ export default function SwissLanding() {
                     <div className="lg:col-span-7 flex flex-col justify-center">
                         <motion.div variants={itemVariants} className="mb-4">
 
-                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-neutral-900 dark:text-white leading-tight">
+                            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white leading-tight">
                                 Shibin <br />
-                                <span className="text-primary-600 dark:text-primary-400">Mariyan</span>
+                                <span className="text-primary-600 dark:text-primary-400">Mariyan Stanly</span>
                             </h1>
                         </motion.div>
 
