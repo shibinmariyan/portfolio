@@ -4,6 +4,7 @@ import { useState } from "react";
 import jsPDF from "jspdf";
 import { Download } from "lucide-react";
 import { portfolioData } from "@/app/data/portfolio";
+import { motion } from "framer-motion";
 
 type PageSize = "a4" | "letter" | "legal";
 
@@ -29,7 +30,7 @@ export default function ResumeGenerator() {
     const margin = 20;
     const contentWidth = pageWidth - 2 * margin;
     const lineHeight = 7;
-    const sectionSpacing = 10;
+    const sectionSpacing = 6; // Reduced from 10 for more compact spacing
 
     // Helper: Add text with word wrap
     const addText = (text: string, fontSize: number, isBold: boolean = false, color: [number, number, number] = [0, 0, 0]) => {
@@ -161,12 +162,41 @@ export default function ResumeGenerator() {
   };
 
   return (
-    <button
+    <motion.button
       onClick={generateResume}
-      className="glass-hover px-6 py-3 rounded-full text-secondary-700 dark:text-secondary-300 font-semibold transition-all flex items-center gap-2 group"
+      className="glass-hover px-6 py-3 rounded-full text-secondary-700 dark:text-secondary-300 font-semibold transition-all flex items-center gap-2 group relative overflow-hidden"
+      initial={{ y: 0, scale: 1 }}
+      whileInView={{
+        y: [0, -5, 0],
+        scale: [1, 1.02, 1],
+      }}
+      viewport={{ once: false, margin: "-50px" }}
+      transition={{
+        duration: 2.5,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+      whileHover={{
+        scale: 1.08,
+        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
+        transition: { duration: 0.2 }
+      }}
+      whileTap={{ scale: 0.95 }}
     >
-      <Download className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-      Download Resume
-    </button>
+      {/* Background Gradient on Hover */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-primary-400/20 to-secondary-400/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        initial={{ opacity: 0 }}
+        whileHover={{ opacity: 1 }}
+      />
+
+      <motion.div
+        whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.2 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Download className="w-5 h-5 relative z-10" />
+      </motion.div>
+      <span className="relative z-10">Download Resume</span>
+    </motion.button>
   );
 }

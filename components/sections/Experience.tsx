@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { portfolioData } from "@/app/data/portfolio";
-import { motion, useScroll, useTransform, Variants } from "framer-motion";
+import { motion, useScroll, useTransform, Variants, useReducedMotion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 interface ExperienceItem {
@@ -32,21 +32,23 @@ function formatDate(date: Date): string {
 
 
 export default function Experience() {
+  const shouldReduceMotion = useReducedMotion();
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 },
+      transition: { staggerChildren: shouldReduceMotion ? 0 : 0.1, delayChildren: 0.1 },
     },
   };
 
   const itemVariants: Variants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: shouldReduceMotion ? 0 : 20, opacity: 0 },
     show: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
   return (
-    <section id="experience" className="py-24 px-4 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-slate-900 border-t border-neutral-200 dark:border-slate-700">
+    <section id="experience" className="py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-950">
       <div className="max-w-7xl mx-auto">
         <motion.div
           variants={containerVariants}
@@ -74,7 +76,25 @@ export default function Experience() {
 
               return (
                 <motion.div key={index} variants={itemVariants} className="group relative pl-8 border-l border-neutral-200 dark:border-neutral-700 hover:border-primary-500 transition-colors duration-300">
-                  <div className="absolute -left-1.5 top-0 w-3 h-3 rounded-full bg-neutral-200 dark:bg-neutral-700 group-hover:bg-primary-500 transition-colors duration-300" />
+                  <motion.div
+                    className="absolute -left-1.5 top-0 w-3 h-3 rounded-full bg-neutral-200 dark:bg-neutral-700 group-hover:bg-primary-500 transition-colors duration-300"
+                    initial={{ scale: 1, boxShadow: "0 0 0 0px rgba(59, 130, 246, 0)" }}
+                    whileInView={{
+                      scale: [1, 1.3, 1],
+                      boxShadow: [
+                        "0 0 0 0px rgba(59, 130, 246, 0)",
+                        "0 0 0 4px rgba(59, 130, 246, 0.2)",
+                        "0 0 0 0px rgba(59, 130, 246, 0)",
+                      ],
+                    }}
+                    viewport={{ once: false, margin: "-50px" }}
+                    transition={{
+                      duration: 2.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: index * 0.2,
+                    }}
+                  />
 
                   <div className="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2">
                     <h3 className="text-2xl font-bold text-neutral-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">

@@ -1,23 +1,27 @@
 "use client";
 
-import { motion, Variants } from "framer-motion";
+import { portfolioData } from "@/app/data/portfolio";
+import { motion, Variants, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import {
   Sparkles,
   Award,
 } from "lucide-react";
-import { portfolioData } from "@/app/data/portfolio";
+
+import { useRef } from 'react';
 
 export default function Skills() {
+  const shouldReduceMotion = useReducedMotion();
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 },
+      transition: { staggerChildren: shouldReduceMotion ? 0 : 0.1 },
     },
   };
 
   const itemVariants: Variants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: shouldReduceMotion ? 0 : 20, opacity: 0 },
     show: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
@@ -46,12 +50,27 @@ export default function Skills() {
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  className="p-8 rounded-3xl bg-neutral-100 dark:bg-slate-800/50 border border-neutral-200 dark:border-slate-700 hover:border-neutral-300 dark:hover:border-slate-600 transition-colors"
+                  className="group p-8 bg-white dark:bg-slate-800 rounded-3xl border border-neutral-200 dark:border-slate-700 hover:border-primary-500 dark:hover:border-primary-600 transition-all duration-300 hover:shadow-lg"
                 >
                   <div className="mb-6 flex items-center gap-4">
-                    <div className="p-3 bg-white dark:bg-slate-700 rounded-2xl shadow-sm">
-                      <Icon className="w-6 h-6 text-neutral-900 dark:text-white" />
-                    </div>
+                    <motion.div
+                      className="inline-flex p-4 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 text-white"
+                      initial={{ y: 0, scale: 1, rotate: 0 }}
+                      whileInView={{
+                        y: shouldReduceMotion ? 0 : [0, -8, 0],
+                        scale: shouldReduceMotion ? 1 : [1, 1.05, 1],
+                        rotate: shouldReduceMotion ? 0 : [0, 2, 0, -2, 0],
+                      }}
+                      viewport={{ once: false, margin: "-50px" }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: index * 0.3,
+                      }}
+                    >
+                      <Icon className="w-8 h-8" />
+                    </motion.div>
                     <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
                       {category.category}
                     </h3>

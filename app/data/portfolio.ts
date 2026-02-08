@@ -66,7 +66,21 @@ export const portfolioData = {
                 icon: Globe,
                 color: "text-primary-600 dark:text-primary-400"
             }
-        ]
+        ],
+        socialStats: {
+            stackoverflow: {
+                reputation: "3,200+",
+                answers: "150+",
+                topTags: ["React", "Node.js", "AWS"]
+            },
+            github: {
+                activeRepos: "12",
+                stars: "85+"
+            },
+            gitlab: {
+                activeRepos: "82"
+            }
+        }
     },
     summary: `Experienced Systems Analyst and Senior Full Stack Developer with 7+ years of expertise in MEAN/MERN stack, AWS, Azure, and modern web technologies. Best Employee Award Winner who architected sophisticated solutions including a CAD-like 2D web-based drawing tool, AI-powered healthcare CRM, and interactive EdTech platforms. Proven track record of delivering innovative, compliance-focused web applications across diverse industries including healthcare (PIPEDA/HIPAA), education, construction, fintech, and event management. Specialized in AI/LLM integration, event-driven architectures, and scalable cloud solutions.`,
     experience: [

@@ -20,18 +20,20 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "Shibin Mariyan Stanly | Portfolio",
+  title: "Shibin Mariyan Stanly | Senior Full Stack Engineer & Systems Analyst",
   description:
-    "Systems Analyst | Senior Full Stack Developer | MEAN Stack | MERN Stack | AWS | NodeJS | React | Angular | 6 Years Experience",
+    "Senior Full Stack Engineer specializing in scalable microservices, AI platforms, and high-performance web architecture. 7+ years of experience delivering enterprise solutions using Node.js, React, AWS, and Cloud-Native technologies.",
   keywords: [
-    "Full Stack Developer",
+    "Senior Full Stack Developer",
+    "System Architecture",
+    "Microservices",
+    "AI Platforms",
+    "Performance Optimization",
     "React",
-    "Angular",
     "Node.js",
     "AWS",
-    "MEAN Stack",
-    "MERN Stack",
-    "Portfolio",
+    "Technical Lead",
+    "TypeScript",
   ],
   authors: [{ name: "Shibin Mariyan Stanly" }],
   creator: "Shibin Mariyan Stanly",
@@ -39,9 +41,35 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://shibinmariyan.github.io/portfolio/",
-    title: "Shibin Mariyan Stanly | Portfolio",
+    title: "Shibin Mariyan Stanly | Senior Full Stack Engineer",
     description:
-      "Systems Analyst | Senior Full Stack Developer | MEAN Stack | MERN Stack",
+      "Architecting scalable enterprise solutions. Expert in Microservices, Real-time Systems, and AI Integration.",
+    siteName: "Shibin Mariyan Stanly Portfolio",
+    images: [
+      {
+        url: "/og-image.png", // Ensure this image exists or is created
+        width: 1200,
+        height: 630,
+        alt: "Shibin Mariyan Stanly - Senior Full Stack Engineer",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Shibin Mariyan Stanly | Senior Full Stack Engineer",
+    description: "Architecting scalable enterprise solutions. Expert in Microservices, Real-time Systems, and AI Integration.",
+    images: ["/og-image.png"], // Consistent with OG image
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 

@@ -99,10 +99,29 @@ export default function Contact() {
                     variants={itemVariants}
                     className={`group relative p-6 rounded-2xl bg-gradient-to-br ${style.bg} ${style.hoverBg} border border-neutral-200 dark:border-neutral-700 hover:shadow-xl transition-all duration-300`}
                   >
-                    {/* Icon */}
-                    <div className={`${style.iconBg} p-3 rounded-xl w-fit mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    {/* Icon with Floating Animation */}
+                    <motion.div
+                      className={`${style.iconBg} p-3 mx-auto rounded-xl w-fit mb-4 shadow-lg`}
+                      initial={{ y: 0, scale: 1, rotate: 0 }}
+                      whileInView={{
+                        y: [0, -10, 0],
+                        scale: [1, 1.08, 1],
+                        rotate: [0, 3, 0, -3, 0],
+                      }}
+                      viewport={{ once: false, margin: "-50px" }}
+                      transition={{
+                        duration: 3.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: index * 0.25,
+                      }}
+                      whileHover={{
+                        scale: 1.15,
+                        transition: { duration: 0.2 }
+                      }}
+                    >
                       <Icon className="w-6 h-6 text-white" />
-                    </div>
+                    </motion.div>
 
                     {/* Content */}
                     <div className="mb-4">

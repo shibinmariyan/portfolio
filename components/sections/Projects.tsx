@@ -1,12 +1,12 @@
 "use client";
 
-import { motion, Variants } from "framer-motion";
-import { Code2, Database, Layers, ExternalLink } from "lucide-react";
+import { motion, Variants, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { Code2, Database, Layers, ExternalLink, Globe, Smartphone } from "lucide-react";
 import Icon3D from "@/components/Icon3D";
 
 interface Project {
   name: string;
-  type: "Full Stack" | "Frontend" | "Backend";
+  type: "Web Application" | "Mobile App" | "Full Stack" | "Frontend";
   period: string;
   description: string;
   highlights: string[];
@@ -15,18 +15,21 @@ interface Project {
 }
 
 import { portfolioData } from "@/app/data/portfolio";
+import { useRef } from "react";
 
 export default function Projects() {
+  const shouldReduceMotion = useReducedMotion();
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 },
+      transition: { staggerChildren: shouldReduceMotion ? 0 : 0.1 },
     },
   };
 
   const itemVariants: Variants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: shouldReduceMotion ? 0 : 20, opacity: 0 },
     show: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
@@ -68,9 +71,23 @@ export default function Projects() {
                 >
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-2xl bg-neutral-100 dark:bg-slate-700 text-neutral-900 dark:text-white">
+                      <motion.div
+                        className="p-3 rounded-2xl bg-neutral-100 dark:bg-slate-700 text-neutral-900 dark:text-white"
+                        initial={{ y: 0, scale: 1 }}
+                        whileInView={{
+                          y: [0, -8, 0],
+                          scale: [1, 1.05, 1],
+                        }}
+                        viewport={{ once: false, margin: "-50px" }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: index * 0.2,
+                        }}
+                      >
                         <Icon className="w-6 h-6" />
-                      </div>
+                      </motion.div>
                       <div>
                         <h3 className="text-2xl font-bold text-neutral-900 dark:text-white leading-tight">
                           {project.name}

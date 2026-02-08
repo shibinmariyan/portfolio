@@ -75,13 +75,14 @@ export default function Navigation() {
                   {item.name}
                 </a>
               ))}
-              <ThemeToggle />
+              {/* <ThemeToggle /> */}
             </div>
             <div className="flex items-center space-x-2 md:hidden">
-              <ThemeToggle />
+              {/* <ThemeToggle /> */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="glass p-2 rounded-lg hover:scale-110 transition-transform duration-300"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
                 {mobileMenuOpen ? (
                   <X className="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
