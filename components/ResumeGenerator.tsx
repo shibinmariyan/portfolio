@@ -36,7 +36,7 @@ export default function ResumeGenerator() {
 
     let currentY = margin;
 
-    // Helper: Add text with word wrap
+    // Helper: Add text with word wrap and justification
     const addText = (
       text: string,
       x: number,
@@ -44,24 +44,27 @@ export default function ResumeGenerator() {
       maxWidth: number,
       fontSize: number,
       isBold: boolean = false,
-      color: [number, number, number] = [0, 0, 0]
+      color: [number, number, number] = [0, 0, 0],
+      align: "left" | "center" | "right" | "justify" = "justify" // Default to justify
     ): number => {
       doc.setFontSize(fontSize);
       doc.setTextColor(color[0], color[1], color[2]);
       doc.setFont("helvetica", isBold ? "bold" : "normal");
 
-      const lines = doc.splitTextToSize(text, maxWidth);
+      // Calculate height first to check for page break
+      // @ts-ignore
+      const textDimensions = doc.getTextDimensions(text, { maxWidth: maxWidth });
+      const textHeight = textDimensions.h;
 
-      lines.forEach((line: string) => {
-        if (y + lineHeight > pageHeight - bottomMargin) {
-          doc.addPage();
-          y = margin;
-        }
-        doc.text(line, x, y);
-        y += lineHeight;
-      });
+      if (y + textHeight > pageHeight - bottomMargin) {
+        doc.addPage();
+        y = margin;
+      }
 
-      return y;
+      // @ts-ignore
+      doc.text(text, x, y, { maxWidth: maxWidth, align: align });
+
+      return y + textHeight + (lineHeight * 0.5); // Add a small buffer
     };
 
     // Helper: Format date to "Mon YYYY"
@@ -123,6 +126,11 @@ export default function ResumeGenerator() {
     doc.text(contactLine2, margin, currentY);
     currentY += 6;
 
+    // ==================== PROFESSIONAL SUMMARY ====================
+    currentY = addSectionHeader("PROFESSIONAL SUMMARY", currentY);
+    currentY = addText(portfolioData.summary, margin, currentY, contentWidth, 9, false, [0, 0, 0]);
+    currentY += 4;
+
     // ==================== CORE COMPETENCIES ====================
     currentY = addSectionHeader("CORE COMPETENCIES", currentY);
     const coreSkills = portfolioData.personalInfo.keywords.slice(0, 15).join("  •  ");
@@ -160,10 +168,6 @@ export default function ResumeGenerator() {
     });
     currentY += 2;
 
-    // ==================== PROFESSIONAL SUMMARY ====================
-    currentY = addSectionHeader("PROFESSIONAL SUMMARY", currentY);
-    currentY = addText(portfolioData.summary, margin, currentY, contentWidth, 9, false, [0, 0, 0]);
-    currentY += 4;
 
     // ==================== PROFESSIONAL EXPERIENCE ====================
     currentY = addSectionHeader("PROFESSIONAL EXPERIENCE", currentY);
@@ -192,13 +196,11 @@ export default function ResumeGenerator() {
       currentY += 4;
 
       // Tech Stack
-      // @ts-ignore
       if (exp.techStack && exp.techStack.length > 0) {
         if (currentY + 5 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
         doc.setFont("helvetica", "bold");
         doc.setFontSize(8);
         doc.setTextColor(blue[0], blue[1], blue[2]);
-        // @ts-ignore
         doc.text(`Stack: ${exp.techStack.join(" • ")}`, margin, currentY);
         currentY += 4;
       }
@@ -270,20 +272,26 @@ export default function ResumeGenerator() {
     currentY = addSectionHeader("EDUCATION", currentY);
 
     portfolioData.education.forEach((edu) => {
-      if (currentY + 10 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
+      if (currentY + 15 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
+
+      // Line 1: Degree
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(9);
+      doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
       doc.text(edu.degree, margin, currentY);
-
-      const degreeWidth = doc.getTextWidth(edu.degree);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(gray[0], gray[1], gray[2]);
-      doc.text(`  |  ${edu.college}`, margin + degreeWidth, currentY);
-
-      doc.setFont("helvetica", "italic");
-      doc.text(edu.period, pageWidth - margin - doc.getTextWidth(edu.period), currentY);
       currentY += 5;
+
+      // Line 2: College | Year
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(gray[0], gray[1], gray[2]);
+      doc.text(edu.college, margin, currentY);
+
+      const collegeWidth = doc.getTextWidth(edu.college);
+      doc.setFont("helvetica", "italic");
+      doc.text(`  |  ${edu.period}`, margin + collegeWidth, currentY);
+
+      currentY += 6;
     });
     currentY += 2;
 

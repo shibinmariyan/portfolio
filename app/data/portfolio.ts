@@ -32,7 +32,7 @@ const experience = [
             "Provided technical leadership within the Technical Management Office (TMO), conducting architectural reviews, code reviews, and mentoring.",
             "Recognized as 'Best Employee of the Quarter (Q1 2025)' and recipient of multiple excellence awards (Kudos, Bravo, Hi5).",
         ],
-        techStack: ["React", "Node.js", "AWS Lambda", "TypeScript", "Nx Monorepo", "PostgreSQL", "Microservices", "Azure", "CI/CD"]
+        techStack: ["React", "Node.js", "AWS Lambda", "TypeScript", "Nx Monorepo", "PostgreSQL", "Microservices", "Azure", "CI/CD", "AWS Cognito", "AWS CloudWatch", "AWS EKS", "AWS Route53", "AWS DynamoDB", "MSSQL", "Redis", "AWS Queue", "AWS SNS"]
     },
     {
         company: "Mckayne Technologies",
@@ -46,7 +46,7 @@ const experience = [
             "Managed cloud infrastructure and deployment strategies on AWS for high availability.",
             "Led technical decision-making and architectural planning for scalable system design.",
         ],
-        techStack: ["React", "Node.js", "MongoDB", "Express", "AWS", "MERN Stack", "System Design"]
+        techStack: ["React", "Angular", "Node.js", "MongoDB", "Express", "AWS", "MERN/MEAN Stack", "System Design", "Figma", "Shell Scripting", "Nginx", "cPanel"]
     },
     {
         company: "NDimensionZ Solutions Private Limited",
@@ -217,7 +217,7 @@ export const portfolioData = {
                 "Built comprehensive CAD toolset, reducing drafting time by 40% for field engineers.",
                 "Designed robust state management using IndexedDB, enabling offline capability for 500+ daily active users.",
             ],
-            technologies: ["React", "Node.js", "Nx", "PostgreSQL", "Azure", "Google Maps API", "Canvas API"],
+            technologies: ["React", "Node.js", "Nx", "PostgreSQL", "Azure", "Google Maps API", "Canvas API", "CAD"],
         },
         {
             name: "Kutubi",
@@ -256,7 +256,7 @@ export const portfolioData = {
                 "Designed event-driven architecture handling 122,000+ users.",
                 "Optimized PostgreSQL queries for massive data migrations.",
             ],
-            technologies: ["React", "Node.js", "NestJS", "AWS Lambda", "Microservices"],
+            technologies: ["React", "Node.js", "AWS Step Functions", "AWS SNS", "CloudWatch", "AWS Lambda", "Microservices"],
         },
         {
             name: "DR Connect",
