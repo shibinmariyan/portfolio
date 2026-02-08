@@ -18,7 +18,7 @@ export const lightTheme = {
     900: "#002766",
     950: "#001529",
   },
-  
+
   // Secondary - Warm Coral/Peach (Pantone 2026 trend)
   secondary: {
     50: "#fff2e8",
@@ -33,7 +33,7 @@ export const lightTheme = {
     900: "#661200",
     950: "#400a00",
   },
-  
+
   // Accent - Vibrant Purple/Magenta (Pantone 2026 trend)
   accent: {
     50: "#f9f0ff",
@@ -48,7 +48,7 @@ export const lightTheme = {
     900: "#120338",
     950: "#0a0120",
   },
-  
+
   // Neutral - Modern Grays
   neutral: {
     50: "#fafafa",
@@ -63,13 +63,13 @@ export const lightTheme = {
     900: "#1f1f1f",
     950: "#141414",
   },
-  
+
   // Background
   background: {
     primary: "linear-gradient(135deg, #fafafa 0%, #e6f7ff 100%)",
     secondary: "#ffffff",
   },
-  
+
   // Text
   text: {
     primary: "#1f1f1f",
@@ -93,7 +93,7 @@ export const darkTheme = {
     900: "#bae7ff",
     950: "#e6f7ff",
   },
-  
+
   // Secondary - Darker Coral/Peach
   secondary: {
     50: "#400a00",
@@ -108,7 +108,7 @@ export const darkTheme = {
     900: "#ffd8bf",
     950: "#fff2e8",
   },
-  
+
   // Accent - Darker Purple/Magenta
   accent: {
     50: "#0a0120",
@@ -123,7 +123,7 @@ export const darkTheme = {
     900: "#efdbff",
     950: "#f9f0ff",
   },
-  
+
   // Neutral - Inverted Grays for Dark Mode
   neutral: {
     50: "#141414",
@@ -138,13 +138,13 @@ export const darkTheme = {
     900: "#f5f5f5",
     950: "#fafafa",
   },
-  
+
   // Background
   background: {
     primary: "linear-gradient(135deg, #141414 0%, #001529 100%)",
     secondary: "#1f1f1f",
   },
-  
+
   // Text
   text: {
     primary: "#f5f5f5",
@@ -158,19 +158,19 @@ export const darkTheme = {
  */
 export const generateThemeVariables = (theme: typeof lightTheme | typeof darkTheme) => {
   const variables: Record<string, string> = {};
-  
+
   Object.entries(theme).forEach(([category, values]) => {
     if (category === "background" || category === "text") {
       Object.entries(values).forEach(([key, value]) => {
-        variables[`--theme-${category}-${key}`] = value;
+        variables[`--theme-${category}-${key}`] = value as string;
       });
     } else {
       Object.entries(values).forEach(([shade, value]) => {
-        variables[`--color-${category}-${shade}`] = value;
+        variables[`--color-${category}-${shade}`] = value as string;
       });
     }
   });
-  
+
   return variables;
 };
 
