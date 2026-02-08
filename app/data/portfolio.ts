@@ -6,7 +6,6 @@ import {
     Database,
     Sparkles,
     Users,
-    Award,
     Phone,
     Github,
     Globe
@@ -14,10 +13,99 @@ import {
 import { FaWhatsapp, FaLinkedin } from "react-icons/fa";
 import { SiGmail } from "react-icons/si";
 
+const experience = [
+    {
+        company: "InApp Information Technologies India Pvt Ltd",
+        position: "System Analyst",
+        positions: ["Software Engineer", "Senior Software Engineer", "System Analyst"],
+        location: "Trivandrum, Kerala, India",
+        startDate: "2021-jul",
+        endDate: "Present",
+        duration: "4+ years",
+        description: [
+            "Architected a high-performance 2D CAD web tool using React, Node.js, and Nx Monorepo, enabling precision technical drawing over Google Maps.",
+            "Led digital transformation for Hyphen Solutions, migrating legacy monoliths to modern React and AWS serverless architecture (BuilderGM & SupplyPro).",
+            "Engineered complex mathematical algorithms for spatial operations, ensuring high-fidelity accuracy for technical documentation.",
+            "Designed a scalable event-driven Microservices architecture using AWS (Lambda, SQS, EventBridge) and Azure, resulting in 40% performance improvement.",
+            "Optimized data processing for massive JSON payloads (up to 125k lines) by leveraging PostgreSQL stored procedures and IndexedDB.",
+            "Established robust CI/CD pipelines using GitHub Actions and AWS CodePipeline, reducing deployment cycles by 60%.",
+            "Provided technical leadership within the Technical Management Office (TMO), conducting architectural reviews, code reviews, and mentoring.",
+            "Recognized as 'Best Employee of the Quarter (Q1 2025)' and recipient of multiple excellence awards (Kudos, Bravo, Hi5).",
+        ],
+    },
+    {
+        company: "Mckayne Technologies",
+        position: "Senior Full Stack Engineer",
+        location: "Cochin, Kerala, India",
+        startDate: "2020-jun",
+        endDate: "2021-jun",
+        duration: "1 year",
+        description: [
+            "Spearheaded end-to-end development of the company's digital platform using MERN/MEAN stack.",
+            "Managed cloud infrastructure and deployment strategies on AWS for high availability.",
+            "Led technical decision-making and architectural planning for scalable system design.",
+        ],
+    },
+    {
+        company: "NDimensionZ Solutions Private Limited",
+        position: "Junior Software Engineer",
+        location: "Kochi, Kerala, India",
+        startDate: "2019-may",
+        endDate: "2020-mar",
+        duration: "11 months",
+        description: [
+            "Developed robust RESTful APIs to handle core business logic.",
+            "Automated routine system maintenance using complex shell scripts.",
+            "Generated data-driven reports and analytics for strategic decision-making.",
+        ],
+    },
+    {
+        company: "MalaLife Pvt Ltd",
+        position: "Frontend Developer",
+        location: "Bangalore, Karnataka, India",
+        startDate: "2018-may",
+        endDate: "2019-apr",
+        duration: "1 year",
+        description: [
+            "Engineered responsive, cross-browser compatible frontend features using Angular and ag-Grid.",
+            "Developed key user-facing modules including compatibility analysis algorithms.",
+            "Focused on UI/UX optimization, improving user engagement and navigation.",
+        ],
+    },
+];
+
+const getExperienceYears = () => {
+    const monthMap: { [key: string]: number } = {
+        jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+        jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+    };
+
+    let earliestTimestamp = Date.now();
+
+    experience.forEach(exp => {
+        const [yearStr, monthStr] = exp.startDate.split('-');
+        if (yearStr && monthStr) {
+            const year = parseInt(yearStr);
+            const month = monthMap[monthStr.toLowerCase()] || 0;
+            const date = new Date(year, month, 1);
+            if (date.getTime() < earliestTimestamp) {
+                earliestTimestamp = date.getTime();
+            }
+        }
+    });
+
+    const diff = Date.now() - earliestTimestamp;
+    const years = diff / (1000 * 60 * 60 * 24 * 365.25);
+    return Math.floor(years) + "+";
+};
+
 export const portfolioData = {
     personalInfo: {
         name: "SHIBIN MARIYAN STANLY",
+        firstName: "Shibin",
+        lastName: "Mariyan Stanly",
         title: "Systems Analyst & Senior Full Stack Developer",
+        tagline: "Building AI-powered healthcare platforms, interactive EdTech solutions, and precision CAD engines that transform industries.",
         email: "shibinmariyanstanley@gmail.com",
         phone: "+91 8075085487",
         location: "Trivandrum, Kerala, India",
@@ -82,67 +170,14 @@ export const portfolioData = {
             }
         }
     },
-    summary: `Experienced Systems Analyst and Senior Full Stack Developer with 7+ years of expertise in MEAN/MERN stack, AWS, Azure, and modern web technologies. Best Employee Award Winner who architected sophisticated solutions including a CAD-like 2D web-based drawing tool, AI-powered healthcare CRM, and interactive EdTech platforms. Proven track record of delivering innovative, compliance-focused web applications across diverse industries including healthcare (PIPEDA/HIPAA), education, construction, fintech, and event management. Specialized in AI/LLM integration, event-driven architectures, and scalable cloud solutions.`,
-    experience: [
-        {
-            company: "InApp Information Technologies India Pvt Ltd",
-            position: "System Analyst",
-            positions: ["Software Engineer", "Senior Software Engineer", "System Analyst"],
-            location: "Trivandrum, Kerala, India",
-            startDate: "2021-jul",
-            endDate: "Present",
-            duration: "4+ years",
-            description: [
-                "Architected a high-performance 2D CAD web tool using React, Node.js, and Nx Monorepo, enabling precision technical drawing over Google Maps.",
-                "Led digital transformation for Hyphen Solutions, migrating legacy monoliths to modern React and AWS serverless architecture (BuilderGM & SupplyPro).",
-                "Engineered complex mathematical algorithms for spatial operations, ensuring high-fidelity accuracy for technical documentation.",
-                "Designed a scalable event-driven Microservices architecture using AWS (Lambda, SQS, EventBridge) and Azure, resulting in 40% performance improvement.",
-                "Optimized data processing for massive JSON payloads (up to 125k lines) by leveraging PostgreSQL stored procedures and IndexedDB.",
-                "Established robust CI/CD pipelines using GitHub Actions and AWS CodePipeline, reducing deployment cycles by 60%.",
-                "Provided technical leadership within the Technical Management Office (TMO), conducting architectural reviews, code reviews, and mentoring.",
-                "Recognized as 'Best Employee of the Quarter (Q1 2025)' and recipient of multiple excellence awards (Kudos, Bravo, Hi5).",
-            ],
-        },
-        {
-            company: "Mckayne Technologies",
-            position: "Senior Full Stack Engineer",
-            location: "Cochin, Kerala, India",
-            startDate: "2020-jun",
-            endDate: "2021-jun",
-            duration: "1 year",
-            description: [
-                "Spearheaded end-to-end development of the company's digital platform using MERN/MEAN stack.",
-                "Managed cloud infrastructure and deployment strategies on AWS for high availability.",
-                "Led technical decision-making and architectural planning for scalable system design.",
-            ],
-        },
-        {
-            company: "NDimensionZ Solutions Private Limited",
-            position: "Junior Software Engineer",
-            location: "Kochi, Kerala, India",
-            startDate: "2019-may",
-            endDate: "2020-mar",
-            duration: "11 months",
-            description: [
-                "Developed robust RESTful APIs to handle core business logic.",
-                "Automated routine system maintenance using complex shell scripts.",
-                "Generated data-driven reports and analytics for strategic decision-making.",
-            ],
-        },
-        {
-            company: "MalaLife Pvt Ltd",
-            position: "Frontend Developer",
-            location: "Bangalore, Karnataka, India",
-            startDate: "2018-may",
-            endDate: "2019-apr",
-            duration: "1 year",
-            description: [
-                "Engineered responsive, cross-browser compatible frontend features using Angular and ag-Grid.",
-                "Developed key user-facing modules including compatibility analysis algorithms.",
-                "Focused on UI/UX optimization, improving user engagement and navigation.",
-            ],
-        },
+    profileDescription: [
+        `Systems Analyst & Senior Full Stack Developer with ${getExperienceYears()} years architecting enterprise solutions across healthcare, education, and geospatial domains. Specialized in AI platforms, CAD engines, and microservices serving 100K+ users.`,
+        "Proven track record: PIPEDA-compliant healthcare systems, DPR rendering algorithms, and cloud migrations for legacy systems.",
+        "Expert in building real-time collaborative systems, implementing LLM-powered automation, and designing scalable cloud architectures on AWS and Azure. Passionate about creating intuitive user experiences backed by robust engineering.",
+        "As a Technical Lead, I set high engineering standards, architect complex systems, and mentor developers to build robust, scalable solutions. I focus on clean code architecture, performance optimization, and driving technical excellence across the stack."
     ],
+    summary: `Experienced Systems Analyst and Senior Full Stack Developer with ${getExperienceYears()} years of expertise in MEAN/MERN stack, AWS, Azure, and modern web technologies. Best Employee Award Winner who architected sophisticated solutions including a CAD-like 2D web-based drawing tool, AI-powered healthcare CRM, and interactive EdTech platforms. Proven track record of delivering innovative, compliance-focused web applications across diverse industries including healthcare (PIPEDA/HIPAA), education, construction, fintech, and event management. Specialized in AI/LLM integration, event-driven architectures, and scalable cloud solutions.`,
+    experience,
     projects: [
         {
             name: "MetalTech",
@@ -285,5 +320,24 @@ export const portfolioData = {
         "Led cross-functional teams in successful project delivery",
         "Implemented scalable microservices architecture",
         "Optimized application performance for large-scale systems",
-    ]
+    ],
+    languages: [
+        {
+            name: "English",
+            proficiency: "Fluent"
+        },
+        {
+            name: "Malayalam",
+            proficiency: "Native"
+        },
+        {
+            name: "Tamil",
+            proficiency: "Conversational"
+        },
+        {
+            name: "Hindi",
+            proficiency: "Conversational"
+        }
+    ],
+    interests: ["Cooking", "Photography", "Gardening", "Cricket"]
 };

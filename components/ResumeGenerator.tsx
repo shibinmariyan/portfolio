@@ -25,136 +25,315 @@ export default function ResumeGenerator() {
       format: pageFormats[pageSize],
     });
 
-    let yPos = 20;
     const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 20;
-    const contentWidth = pageWidth - 2 * margin;
-    const lineHeight = 7;
-    const sectionSpacing = 6; // Reduced from 10 for more compact spacing
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 15;
+    const leftColumnWidth = (pageWidth - 2 * margin) * 0.58; // 58% for left column
+    const rightColumnWidth = (pageWidth - 2 * margin) * 0.38; // 38% for right column
+    const columnGap = (pageWidth - 2 * margin) * 0.04; // 4% gap
+    const rightColumnX = margin + leftColumnWidth + columnGap;
+    const lineHeight = 5;
+    const blue: [number, number, number] = [74, 144, 226]; // #4A90E2
+    const gray: [number, number, number] = [100, 100, 100];
+    const lightGray: [number, number, number] = [150, 150, 150];
+    const bottomMargin = 20;
+
+    let leftY = margin;
+    let rightY = margin;
 
     // Helper: Add text with word wrap
-    const addText = (text: string, fontSize: number, isBold: boolean = false, color: [number, number, number] = [0, 0, 0]) => {
+    const addText = (
+      text: string,
+      x: number,
+      y: number,
+      maxWidth: number,
+      fontSize: number,
+      isBold: boolean = false,
+      color: [number, number, number] = [0, 0, 0]
+    ): number => {
       doc.setFontSize(fontSize);
       doc.setTextColor(color[0], color[1], color[2]);
-      if (isBold) {
-        doc.setFont("helvetica", "bold");
-      } else {
-        doc.setFont("helvetica", "normal");
-      }
+      doc.setFont("helvetica", isBold ? "bold" : "normal");
 
-      const lines = doc.splitTextToSize(text, contentWidth);
-      if (yPos + lines.length * lineHeight > doc.internal.pageSize.getHeight() - 20) {
-        doc.addPage();
-        yPos = 20;
-      }
-      doc.text(lines, margin, yPos);
-      yPos += lines.length * lineHeight;
+      const lines = doc.splitTextToSize(text, maxWidth);
+
+      lines.forEach((line: string) => {
+        doc.text(line, x, y);
+        y += lineHeight;
+      });
+
+      return y;
     };
 
-    // Helper: Format Dates (e.g., "2021-jul" -> "July 2021")
-    const formatResumeDate = (dateStr: string) => {
-      if (dateStr.toLowerCase() === "present") return "Present";
-      const parts = dateStr.toLowerCase().split("-");
-      if (parts.length === 2) {
-        const [year, monthAbbr] = parts;
-        const monthMap: { [key: string]: string } = {
-          jan: "January", feb: "February", mar: "March", apr: "April", may: "May", jun: "June",
-          jul: "July", aug: "August", sep: "September", oct: "October", nov: "November", dec: "December"
-        };
-        return `${monthMap[monthAbbr] || monthAbbr} ${year}`;
-      }
-      return dateStr; // Fallback
+    // Helper: Add section header with blue underline
+    const addSectionHeader = (text: string, x: number, y: number, width: number): number => {
+      doc.setFontSize(12);
+      doc.setTextColor(blue[0], blue[1], blue[2]);
+      doc.setFont("helvetica", "bold");
+      doc.text(text, x, y);
+
+      // Blue underline
+      doc.setDrawColor(blue[0], blue[1], blue[2]);
+      doc.setLineWidth(0.5);
+      doc.line(x, y + 1, x + width, y + 1);
+
+      return y + 6;
     };
 
-    // Header
-    addText(portfolioData.personalInfo.name, 20, true, [0, 0, 0]);
-    yPos += 3;
-    addText(portfolioData.personalInfo.title, 12, false, [50, 50, 50]);
-    yPos += 3;
-    addText(`${portfolioData.personalInfo.email} | ${portfolioData.personalInfo.phone} | ${portfolioData.personalInfo.location}`, 9, false, [80, 80, 80]);
-    addText(`LinkedIn: ${portfolioData.personalInfo.linkedin} | Portfolio: ${portfolioData.personalInfo.portfolio}`, 9, false, [80, 80, 80]);
-    yPos += sectionSpacing;
+    // ==================== HEADER SECTION (FULL WIDTH) ====================
+    // Name in blue
+    doc.setFontSize(22);
+    doc.setTextColor(blue[0], blue[1], blue[2]);
+    doc.setFont("helvetica", "bold");
+    doc.text(portfolioData.personalInfo.name, margin, leftY);
+    leftY += 7;
 
-    // Professional Summary
-    addText("PROFESSIONAL SUMMARY", 14, true, [0, 0, 0]);
-    yPos += 3;
-    addText(portfolioData.summary, 10, false, [0, 0, 0]);
-    yPos += sectionSpacing;
+    // Title
+    doc.setFontSize(11);
+    doc.setTextColor(gray[0], gray[1], gray[2]);
+    doc.setFont("helvetica", "normal");
+    doc.text(portfolioData.personalInfo.title, margin, leftY);
+    leftY += 6;
 
-    // Professional Experience
-    addText("PROFESSIONAL EXPERIENCE", 14, true, [0, 0, 0]);
-    yPos += 3;
+    // Contact Info
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+    const contactLine = `${portfolioData.personalInfo.email} | ${portfolioData.personalInfo.phone} | ${portfolioData.personalInfo.location}`;
+    doc.text(contactLine, margin, leftY);
+    leftY += 4;
+    const linksLine = `${portfolioData.personalInfo.linkedin} | github.com/shibinmariyan`;
+    doc.text(linksLine, margin, leftY);
+    leftY += 6;
+
+    // Professional Summary (full width)
+    leftY = addSectionHeader("PROFESSIONAL SUMMARY", margin, leftY, pageWidth - 2 * margin);
+    leftY = addText(portfolioData.summary, margin, leftY, pageWidth - 2 * margin, 9, false, [0, 0, 0]);
+    leftY += 4;
+
+    // Set starting point for both columns
+    rightY = leftY;
+
+    // ==================== LEFT COLUMN - EXPERIENCE ====================
+    leftY = addSectionHeader("PROFESSIONAL EXPERIENCE", margin, leftY, leftColumnWidth);
 
     portfolioData.experience.forEach((exp) => {
-      addText(`${exp.position} | ${exp.company}`, 12, true, [0, 0, 0]);
-      yPos += 2;
-      const dateRange = `${formatResumeDate(exp.startDate)} - ${formatResumeDate(exp.endDate || "Present")}`;
-      addText(`${exp.location} | ${dateRange} (${exp.duration})`, 10, false, [80, 80, 80]);
-      yPos += 2;
-      // Use description as achievements
+      // Check if we need a new page
+      if (leftY + 35 > pageHeight - bottomMargin) {
+        doc.addPage();
+        leftY = margin;
+        rightY = margin;
+      }
+
+      // Job title and company
+      leftY = addText(`${exp.position}`, margin, leftY, leftColumnWidth, 11, true, [0, 0, 0]);
+      leftY = addText(exp.company, margin, leftY, leftColumnWidth, 10, false, [0, 0, 0]);
+
+      // Date and location
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(9);
+      doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
+      const dateRange = `${exp.startDate} - ${exp.endDate || "Present"} | ${exp.location}`;
+      doc.text(dateRange, margin, leftY);
+      leftY += 5;
+
+      // Achievements
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(0, 0, 0);
+
       exp.description.forEach((achievement) => {
-        addText(`• ${achievement}`, 10, false, [0, 0, 0]);
-        yPos += 1;
+        if (leftY + 10 > pageHeight - bottomMargin) {
+          doc.addPage();
+          leftY = margin;
+          rightY = margin;
+        }
+        leftY = addText(`• ${achievement}`, margin, leftY, leftColumnWidth - 3, 9, false, [0, 0, 0]);
       });
-      yPos += sectionSpacing;
+
+      leftY += 3;
     });
 
-    // Technical Skills
-    addText("TECHNICAL SKILLS", 14, true, [0, 0, 0]);
-    yPos += 3;
+    // ==================== LEFT COLUMN - EDUCATION ====================
+    if (leftY + 20 > pageHeight - bottomMargin) {
+      doc.addPage();
+      leftY = margin;
+      rightY = margin;
+    }
+    leftY = addSectionHeader("EDUCATION", margin, leftY, leftColumnWidth);
+
+    portfolioData.education.forEach((edu) => {
+      if (leftY + 15 > pageHeight - bottomMargin) {
+        doc.addPage();
+        leftY = margin;
+        rightY = margin;
+      }
+      leftY = addText(edu.degree, margin, leftY, leftColumnWidth, 10, true, [0, 0, 0]);
+      leftY = addText(edu.college, margin, leftY, leftColumnWidth, 9, false, gray);
+
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
+      doc.text(edu.period, margin, leftY);
+      leftY += 6;
+    });
+
+    // ==================== LEFT COLUMN - CERTIFICATIONS ====================
+    if (leftY + 15 > pageHeight - bottomMargin) {
+      doc.addPage();
+      leftY = margin;
+      rightY = margin;
+    }
+    leftY = addSectionHeader("CERTIFICATIONS", margin, leftY, leftColumnWidth);
+
+    portfolioData.certifications.forEach((cert) => {
+      if (leftY + 6 > pageHeight - bottomMargin) {
+        doc.addPage();
+        leftY = margin;
+        rightY = margin;
+      }
+      leftY = addText(`• ${cert}`, margin, leftY, leftColumnWidth, 9, false, [0, 0, 0]);
+    });
+
+    // ==================== RIGHT COLUMN - Start on page 1 ====================
+    // Go back to page 1 to start right column
+    let currentRightPage = 1;
+    doc.setPage(currentRightPage);
+
+    // Calculate where right column starts (after header)
+    let headerHeight = margin + 7 + 6 + 4 + 4; // Name + title + contact lines
+    // Add summary section height
+    const summaryLines = doc.splitTextToSize(portfolioData.summary, pageWidth - 2 * margin);
+    headerHeight += 6 + (summaryLines.length * lineHeight) + 4; // Section header + text + spacing
+
+    rightY = headerHeight;
+
+    // ==================== RIGHT COLUMN - ACHIEVEMENTS ====================
+    rightY = addSectionHeader("KEY ACHIEVEMENTS", rightColumnX, rightY, rightColumnWidth);
+
+    portfolioData.achievements.forEach((achievement) => {
+      if (rightY + 8 > pageHeight - bottomMargin) {
+        if (currentRightPage < doc.internal.pages.length - 1) {
+          currentRightPage++;
+          doc.setPage(currentRightPage);
+        } else {
+          doc.addPage();
+          currentRightPage++;
+        }
+        rightY = margin;
+      }
+      rightY = addText(`• ${achievement}`, rightColumnX, rightY, rightColumnWidth, 9, false, [0, 0, 0]);
+    });
+    rightY += 3;
+
+    // ==================== RIGHT COLUMN - SKILLS ====================
+    if (rightY + 15 > pageHeight - bottomMargin) {
+      if (currentRightPage < doc.internal.pages.length - 1) {
+        currentRightPage++;
+        doc.setPage(currentRightPage);
+      } else {
+        doc.addPage();
+        currentRightPage++;
+      }
+      rightY = margin;
+    }
+    rightY = addSectionHeader("TECHNICAL SKILLS", rightColumnX, rightY, rightColumnWidth);
 
     portfolioData.skillCategories.forEach((cat) => {
-      addText(`${cat.category}:`, 11, true, [0, 0, 0]);
-      yPos += 2;
-      addText(cat.skills.join(", "), 10, false, [0, 0, 0]);
-      yPos += sectionSpacing - 3;
+      if (rightY + 12 > pageHeight - bottomMargin) {
+        if (currentRightPage < doc.internal.pages.length - 1) {
+          currentRightPage++;
+          doc.setPage(currentRightPage);
+        } else {
+          doc.addPage();
+          currentRightPage++;
+        }
+        rightY = margin;
+      }
+      rightY = addText(`${cat.category}:`, rightColumnX, rightY, rightColumnWidth, 9, true, [0, 0, 0]);
+      rightY = addText(cat.skills.join(", "), rightColumnX, rightY, rightColumnWidth, 8, false, [0, 0, 0]);
+      rightY += 2;
     });
-    // Add extra spacing after loop
-    yPos += 5;
 
-
-    // Key Projects
-    addText("KEY PROJECTS", 14, true, [0, 0, 0]);
-    yPos += 3;
+    // ==================== RIGHT COLUMN - PROJECTS ====================
+    if (rightY + 15 > pageHeight - bottomMargin) {
+      if (currentRightPage < doc.internal.pages.length - 1) {
+        currentRightPage++;
+        doc.setPage(currentRightPage);
+      } else {
+        doc.addPage();
+        currentRightPage++;
+      }
+      rightY = margin;
+    }
+    rightY = addSectionHeader("KEY PROJECTS", rightColumnX, rightY, rightColumnWidth);
 
     portfolioData.projects.forEach((project) => {
-      addText(`${project.name} (${project.type}) - ${project.period}`, 11, true, [0, 0, 0]);
-      yPos += 2;
-      addText(project.description, 10, false, [0, 0, 0]);
-      yPos += 2;
-      addText(`Technologies: ${project.technologies.join(", ")}`, 9, false, [80, 80, 80]);
-      yPos += sectionSpacing;
+      if (rightY + 15 > pageHeight - bottomMargin) {
+        if (currentRightPage < doc.internal.pages.length - 1) {
+          currentRightPage++;
+          doc.setPage(currentRightPage);
+        } else {
+          doc.addPage();
+          currentRightPage++;
+        }
+        rightY = margin;
+      }
+      rightY = addText(`${project.name}`, rightColumnX, rightY, rightColumnWidth, 9, true, [0, 0, 0]);
+      rightY = addText(project.technologies.join(", "), rightColumnX, rightY, rightColumnWidth, 8, false, lightGray);
+      rightY += 2;
     });
 
-    // Education
-    addText("EDUCATION", 14, true, [0, 0, 0]);
-    yPos += 3;
-    portfolioData.education.forEach((edu) => {
-      addText(`${edu.degree}`, 12, true, [0, 0, 0]);
-      yPos += 2;
-      addText(`${edu.college}`, 11, false, [50, 50, 50]);
-      yPos += 2;
-      addText(`${edu.period}`, 10, false, [80, 80, 80]);
-      yPos += sectionSpacing;
-    });
+    // ==================== RIGHT COLUMN - LANGUAGES ====================
+    if (portfolioData.languages && portfolioData.languages.length > 0) {
+      if (rightY + 15 > pageHeight - bottomMargin) {
+        if (currentRightPage < doc.internal.pages.length - 1) {
+          currentRightPage++;
+          doc.setPage(currentRightPage);
+        } else {
+          doc.addPage();
+          currentRightPage++;
+        }
+        rightY = margin;
+      }
+      rightY = addSectionHeader("LANGUAGES", rightColumnX, rightY, rightColumnWidth);
 
-    // Certifications
-    addText("CERTIFICATIONS", 14, true, [0, 0, 0]);
-    yPos += 3;
-    portfolioData.certifications.forEach((cert) => {
-      addText(`• ${cert}`, 10, false, [0, 0, 0]);
-      yPos += 2;
-    });
+      portfolioData.languages.forEach((lang) => {
+        if (rightY + 8 > pageHeight - bottomMargin) {
+          if (currentRightPage < doc.internal.pages.length - 1) {
+            currentRightPage++;
+            doc.setPage(currentRightPage);
+          } else {
+            doc.addPage();
+            currentRightPage++;
+          }
+          rightY = margin;
+        }
+        rightY = addText(lang.name, rightColumnX, rightY, rightColumnWidth, 9, false, [0, 0, 0]);
 
-    yPos += sectionSpacing;
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(8);
+        doc.setTextColor(blue[0], blue[1], blue[2]);
+        doc.text(lang.proficiency, rightColumnX, rightY);
+        rightY += 5;
+      });
+      rightY += 2;
+    }
 
-    // Achievements
-    addText("KEY ACHIEVEMENTS", 14, true, [0, 0, 0]);
-    yPos += 3;
-    portfolioData.achievements.forEach((achievement) => {
-      addText(`• ${achievement}`, 10, false, [0, 0, 0]);
-      yPos += 2;
-    });
+    // ==================== RIGHT COLUMN - INTERESTS ====================
+    if (portfolioData.interests && portfolioData.interests.length > 0) {
+      if (rightY + 10 > pageHeight - bottomMargin) {
+        if (currentRightPage < doc.internal.pages.length - 1) {
+          currentRightPage++;
+          doc.setPage(currentRightPage);
+        } else {
+          doc.addPage();
+          currentRightPage++;
+        }
+        rightY = margin;
+      }
+      rightY = addSectionHeader("INTERESTS", rightColumnX, rightY, rightColumnWidth);
+      rightY = addText(portfolioData.interests.join(" • "), rightColumnX, rightY, rightColumnWidth, 9, false, [0, 0, 0]);
+    }
 
     // Save the PDF
     const formattedDate = new Date().toISOString().split('T')[0];

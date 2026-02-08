@@ -4,13 +4,8 @@ import { motion, Variants, useReducedMotion } from "framer-motion";
 import {
     ArrowRight,
     Terminal,
-    Layers,
-    Cpu,
     Globe,
-    Layout,
-    Github
 } from "lucide-react";
-import Icon3D from "@/components/Icon3D";
 import ResumeGenerator from "@/components/ResumeGenerator";
 import { portfolioData } from "@/app/data/portfolio";
 
@@ -82,14 +77,14 @@ export default function SwissLanding() {
                         <motion.div variants={itemVariants} className="mb-4">
 
                             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white leading-tight">
-                                Shibin <br />
-                                <span className="text-primary-600 dark:text-primary-400">Mariyan Stanly</span>
+                                {portfolioData.personalInfo.firstName} <br />
+                                <span className="text-primary-600 dark:text-primary-400">{portfolioData.personalInfo.lastName}</span>
                             </h1>
                         </motion.div>
 
                         <motion.p variants={itemVariants} className="text-xl md:text-2xl text-neutral-600 dark:text-neutral-300 font-medium mb-8 max-w-2xl leading-relaxed">
                             {portfolioData.personalInfo.title}. <br />
-                            Building AI-powered healthcare platforms, interactive EdTech solutions, and precision CAD engines that transform industries.
+                            {portfolioData.personalInfo.tagline}
                         </motion.p>
 
                         <motion.div variants={itemVariants} className="flex flex-wrap gap-4 mb-10">
@@ -110,19 +105,13 @@ export default function SwissLanding() {
                             </h3>
 
                             {/* Main About */}
+                            {/* Main About */}
                             <div className="p-5 rounded-xl bg-gradient-to-br from-neutral-50 to-neutral-100 dark:bg-slate-800 dark:from-slate-800 dark:to-slate-800 border border-neutral-200 dark:border-slate-600 space-y-3 shadow-lg dark:shadow-none">
-                                <p className="text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed">
-                                    Systems Analyst & Senior Full Stack Developer with 7+ years architecting enterprise solutions across healthcare, education, and geospatial domains. Specialized in AI platforms, CAD engines, and microservices serving 100K+ users.
-                                </p>
-                                <p className="text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed">
-                                    Proven track record: PIPEDA-compliant healthcare systems, DPR rendering algorithms, and cloud migrations for legacy systems.
-                                </p>
-                                <p className="text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed">
-                                    Expert in building real-time collaborative systems, implementing LLM-powered automation, and designing scalable cloud architectures on AWS and Azure. Passionate about creating intuitive user experiences backed by robust engineering.
-                                </p>
-                                <p className="text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed">
-                                    As a Technical Lead, I set high engineering standards, architect complex systems, and mentor developers to build robust, scalable solutions. I focus on clean code architecture, performance optimization, and driving technical excellence across the stack.
-                                </p>
+                                {portfolioData.profileDescription.map((paragraph, index) => (
+                                    <p key={index} className="text-sm text-neutral-700 dark:text-neutral-200 leading-relaxed">
+                                        {paragraph}
+                                    </p>
+                                ))}
                             </div>
                         </motion.div>
                     </div>
