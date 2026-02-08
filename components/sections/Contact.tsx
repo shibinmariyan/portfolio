@@ -87,7 +87,7 @@ export default function Contact() {
           {/* Right: Contact Cards Grid */}
           <div className="grid sm:grid-cols-2 gap-4">
             {portfolioData.personalInfo.socials
-              .filter((link) => link.name !== "Portfolio" && link.name !== "Github")
+              .filter((link) => link.name !== "Portfolio")
               .map((link, index) => {
                 const Icon = link.icon;
                 const style = brandStyles[link.name] || brandStyles.Phone;

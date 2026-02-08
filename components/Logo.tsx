@@ -1,15 +1,14 @@
 "use client";
 
 import { m } from "framer-motion";
-import Image from "next/image";
-import logoImage from "@/app/assets/sms_logo.png";
+import { portfolioData } from "@/app/data/portfolio";
 
 export default function Logo({ className = "", showText = true, size = "md" }: { className?: string; showText?: boolean; size?: "sm" | "md" | "lg" | "xl" }) {
   const sizeClasses = {
-    sm: "w-16 h-16",
-    md: "w-32 h-32",
-    lg: "w-48 h-48",
-    xl: "w-64 h-64",
+    sm: "text-2xl",
+    md: "text-4xl",
+    lg: "text-5xl",
+    xl: "text-6xl",
   };
 
   const textSizeClasses = {
@@ -19,6 +18,13 @@ export default function Logo({ className = "", showText = true, size = "md" }: {
     xl: "text-lg",
   };
 
+  // Extract initials properly now that we have split names
+  const initials = [
+    portfolioData.personalInfo.firstName[0],
+    portfolioData.personalInfo.middleName ? portfolioData.personalInfo.middleName[0] : "",
+    portfolioData.personalInfo.lastName[0]
+  ].filter(Boolean);
+
   return (
     <m.div
       className={`flex flex-col items-center gap-2 ${className}`}
@@ -26,23 +32,21 @@ export default function Logo({ className = "", showText = true, size = "md" }: {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* SMS Logo Image */}
+      {/* Text-based Logo (S M S) */}
       <m.div
-        className={`${sizeClasses[size]} relative`}
-        whileHover={{ scale: 1.1 }}
+        className={`${sizeClasses[size]} font-black tracking-tighter flex items-center justify-center gap-1 select-none`}
+        whileHover={{ scale: 1.05 }}
         transition={{ type: "spring", stiffness: 300 }}
-        style={{
-          filter: "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))",
-        }}
       >
-        <Image
-          src={logoImage}
-          alt="SMS Logo - Shibin Mariyan Stanly"
-          fill
-          className="object-contain"
-          priority
-          sizes="(max-width: 768px) 64px, (max-width: 1024px) 128px, 192px"
-        />
+        <span className="text-primary-700 dark:text-white">
+          {initials[0]}
+        </span>
+        <span className="text-primary-700 dark:text-white">
+          {initials[1]}
+        </span>
+        <span className="text-primary-700 dark:text-white ">
+          {initials[2]}
+        </span>
       </m.div>
 
       {/* Text below logo */}
@@ -53,7 +57,7 @@ export default function Logo({ className = "", showText = true, size = "md" }: {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          SHIBIN MARIYAN STANLY
+          {portfolioData.personalInfo.name}
         </m.p>
       )}
     </m.div>

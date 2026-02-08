@@ -1,25 +1,12 @@
 import type { Metadata } from "next";
-import { Poppins, Raleway } from "next/font/google";
+
 import { ThemeProvider } from "@/components/ThemeProvider";
 import MouseFollower from "@/components/MouseFollower";
 import { FramerLazyMotion } from "@/components/FramerLazyMotion";
 import { portfolioData } from "@/app/data/portfolio";
 import "./globals.scss";
 
-// Next.js font loaders require explicit literals, not variables
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-poppins",
-  display: "swap",
-});
-
-const raleway = Raleway({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-raleway",
-  display: "swap",
-});
+import { poppins, raleway } from "@/config/fonts";
 
 export const metadata: Metadata = {
   title: `${portfolioData.personalInfo.name} | ${portfolioData.personalInfo.title}`,
@@ -108,7 +95,8 @@ export default function RootLayout({
             {children}
           </FramerLazyMotion>
         </ThemeProvider>
+        {/* <Analytics /> - Placeholder for Vercel Analytics or Google Analytics */}
       </body>
-    </html>
+    </html >
   );
 }

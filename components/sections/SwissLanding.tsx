@@ -38,9 +38,10 @@ export default function SwissLanding() {
     }, 0);
 
     const expYears = Math.floor(totalMonths / 12);
-    // Get the very first start year for "Since XXXX" display
+    // Get the very first start year/month for "Since Month Year" display
     const firstJobDate = portfolioData.experience[portfolioData.experience.length - 1].startDate;
-    const startYear = firstJobDate.split("-")[0];
+    const [startYear, startMonthRaw] = firstJobDate.split("-");
+    const startMonth = startMonthRaw ? startMonthRaw.charAt(0).toUpperCase() + startMonthRaw.slice(1) : "";
 
     const shouldReduceMotion = useReducedMotion();
 
@@ -84,7 +85,7 @@ export default function SwissLanding() {
 
                             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white leading-tight">
                                 {portfolioData.personalInfo.firstName} <br />
-                                <span className="text-primary-600 dark:text-primary-400">{portfolioData.personalInfo.lastName}</span>
+                                <span className="text-primary-600 dark:text-primary-400">{portfolioData.personalInfo.middleName} {portfolioData.personalInfo.lastName}</span>
                             </h1>
                         </m.div>
 
@@ -134,7 +135,7 @@ export default function SwissLanding() {
                                 <div className="text-7xl font-bold mb-2 tracking-tighter">{expYears}+</div>
                                 <div className="text-xl font-medium opacity-90">Years Experience</div>
                                 <div className="mt-6 flex items-center gap-2 text-primary-100 text-sm">
-                                    <Globe className="w-4 h-4" /> Since May {startYear}
+                                    <Globe className="w-4 h-4" /> Since {startMonth} {startYear}
                                 </div>
                             </div>
                             {/* Decorative background elements */}
