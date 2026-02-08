@@ -48,8 +48,8 @@ export default function Navigation() {
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-            ? "bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-neutral-200/50 dark:border-white/5 shadow-sm py-2"
-            : "bg-transparent py-4"
+          ? "bg-white/90 dark:bg-slate-900/95 backdrop-blur-md border-b border-neutral-200/50 dark:border-white/5 shadow-sm py-2"
+          : "bg-transparent py-4"
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,7 +58,7 @@ export default function Navigation() {
               <a href="#landing" className="flex items-center">
                 <Logo size="sm" showText={false} />
               </a>
-              <span className="hidden sm:inline-block px-3 py-1 text-xs font-bold tracking-wider text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/30 rounded-full border border-primary-200 dark:border-primary-700">
+              <span className="hidden sm:inline-block px-3 py-1 text-xs font-bold tracking-wider text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/50 rounded-full border border-primary-200 dark:border-primary-700">
                 AVAILABLE FOR HIRE
               </span>
             </div>

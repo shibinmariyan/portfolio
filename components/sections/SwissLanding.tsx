@@ -110,16 +110,16 @@ export default function SwissLanding() {
                             {/* Main About */}
                             <div className="p-5 rounded-xl bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-slate-900/50 dark:to-slate-800/50 border border-neutral-200 dark:border-slate-700 space-y-3">
                                 <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                                    A <strong className="text-neutral-900 dark:text-white">Systems Analyst & Senior Full Stack Developer</strong> with 7+ years architecting enterprise solutions across healthcare, education, and geospatial domains. Specialized in <strong className="text-neutral-900 dark:text-white">AI platforms</strong>, <strong className="text-neutral-900 dark:text-white">CAD engines</strong>, and <strong className="text-neutral-900 dark:text-white">microservices</strong> serving 100K+ users.
+                                    Systems Analyst & Senior Full Stack Developer with 7+ years architecting enterprise solutions across healthcare, education, and geospatial domains. Specialized in AI platforms, CAD engines, and microservices serving 100K+ users.
                                 </p>
                                 <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                                    Proven track record: <strong className="text-neutral-900 dark:text-white">PIPEDA-compliant healthcare systems</strong>, <strong className="text-neutral-900 dark:text-white">DPR rendering algorithms</strong>, and <strong className="text-neutral-900 dark:text-white">cloud migrations</strong> for legacy systems.
+                                    Proven track record: PIPEDA-compliant healthcare systems, DPR rendering algorithms, and cloud migrations for legacy systems.
                                 </p>
                                 <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                                    Expert in building <strong className="text-neutral-900 dark:text-white">real-time collaborative systems</strong>, implementing <strong className="text-neutral-900 dark:text-white">LLM-powered automation</strong>, and designing <strong className="text-neutral-900 dark:text-white">scalable cloud architectures</strong> on AWS and Azure. Passionate about creating intuitive user experiences backed by robust engineering.
+                                    Expert in building real-time collaborative systems, implementing LLM-powered automation, and designing scalable cloud architectures on AWS and Azure. Passionate about creating intuitive user experiences backed by robust engineering.
                                 </p>
                                 <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                                    As a <strong className="text-neutral-900 dark:text-white">Technical Lead</strong>, I set high engineering standards, architect complex systems, and mentor developers to build robust, scalable solutions. I focus on <strong className="text-neutral-900 dark:text-white">clean code architecture</strong>, performance optimization, and driving technical excellence across the stack.
+                                    As a Technical Lead, I set high engineering standards, architect complex systems, and mentor developers to build robust, scalable solutions. I focus on clean code architecture, performance optimization, and driving technical excellence across the stack.
                                 </p>
                             </div>
                         </motion.div>

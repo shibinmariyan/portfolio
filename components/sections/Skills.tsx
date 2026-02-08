@@ -31,10 +31,10 @@ export default function Skills() {
           viewport={{ once: true, margin: "-100px" }}
         >
           <div className="mb-16 text-left">
-            <motion.h2 variants={itemVariants} className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 mb-6">
+            <motion.h2 variants={itemVariants} className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white mb-6">
               Expertise
             </motion.h2>
-            <motion.p variants={itemVariants} className="text-xl text-neutral-500 max-w-2xl">
+            <motion.p variants={itemVariants} className="text-xl text-neutral-500 dark:text-neutral-400 max-w-2xl">
               A comprehensive toolkit for building scalable, high-performance distributed systems.
             </motion.p>
           </div>
@@ -46,13 +46,13 @@ export default function Skills() {
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  className="p-8 rounded-3xl bg-neutral-100 border border-neutral-200 hover:border-neutral-300 transition-colors"
+                  className="p-8 rounded-3xl bg-neutral-100 dark:bg-slate-800/50 border border-neutral-200 dark:border-slate-700 hover:border-neutral-300 dark:hover:border-slate-600 transition-colors"
                 >
                   <div className="mb-6 flex items-center gap-4">
-                    <div className="p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-sm">
-                      <Icon className="w-6 h-6 text-neutral-900" />
+                    <div className="p-3 bg-white dark:bg-slate-700 rounded-2xl shadow-sm">
+                      <Icon className="w-6 h-6 text-neutral-900 dark:text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-neutral-900">
+                    <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
                       {category.category}
                     </h3>
                   </div>
@@ -60,7 +60,7 @@ export default function Skills() {
                     {category.skills.map((skill, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1.5 text-sm font-medium rounded-lg bg-white dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 text-neutral-600 dark:text-neutral-300"
+                        className="px-3 py-1.5 text-sm font-medium rounded-lg bg-white dark:bg-slate-700 border border-neutral-200 dark:border-slate-600 text-neutral-600 dark:text-neutral-300"
                       >
                         {skill}
                       </span>
@@ -71,43 +71,43 @@ export default function Skills() {
             })}
           </div>
 
-          <motion.div variants={itemVariants} className="border-t border-neutral-200 pt-16">
+          <motion.div variants={itemVariants} className="border-t border-neutral-200 dark:border-slate-800 pt-16">
             <div className="grid md:grid-cols-12 gap-8 items-start">
               <div className="md:col-span-4">
-                <h3 className="text-3xl font-bold text-neutral-900 mb-4">
+                <h3 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">
                   Certifications
                 </h3>
-                <p className="text-neutral-500">
+                <p className="text-neutral-500 dark:text-neutral-400">
                   Verified technical competencies and continuous learning milestones.
                 </p>
               </div>
               <div className="md:col-span-8 grid sm:grid-cols-2 gap-4">
                 {portfolioData.certifications.map((cert, index) => (
-                  <div key={index} className="flex items-center gap-3 p-4 rounded-xl bg-neutral-100 border border-neutral-100">
-                    <Award className="w-5 h-5 text-primary-600 flex-shrink-0" />
-                    <span className="font-medium text-neutral-700">{cert}</span>
+                  <div key={index} className="flex items-center gap-3 p-4 rounded-xl bg-neutral-100 dark:bg-slate-800/50 border border-neutral-100 dark:border-slate-700">
+                    <Award className="w-5 h-5 text-primary-600 dark:text-primary-400 flex-shrink-0" />
+                    <span className="font-medium text-neutral-700 dark:text-neutral-200">{cert}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="grid md:grid-cols-12 gap-8 items-start mt-12 pt-12 border-t border-neutral-100">
+            <div className="grid md:grid-cols-12 gap-8 items-start mt-12 pt-12 border-t border-neutral-100 dark:border-slate-800">
               <div className="md:col-span-4">
-                <h3 className="text-3xl font-bold text-neutral-900 mb-4">
+                <h3 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">
                   Education
                 </h3>
-                <p className="text-neutral-500">
+                <p className="text-neutral-500 dark:text-neutral-400">
                   Academic background and qualifications.
                 </p>
               </div>
               <div className="md:col-span-8 grid grid-cols-1 gap-4">
                 {portfolioData.education.map((edu, index) => (
-                  <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-xl bg-neutral-100 border border-neutral-100 hover:border-primary-200 transition-colors">
+                  <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-xl bg-neutral-100 dark:bg-slate-800/50 border border-neutral-100 dark:border-slate-700 hover:border-primary-200 dark:hover:border-primary-800 transition-colors">
                     <div>
-                      <h4 className="text-lg font-bold text-neutral-900">{edu.degree}</h4>
-                      <p className="text-neutral-600">{edu.college}</p>
+                      <h4 className="text-lg font-bold text-neutral-900 dark:text-white">{edu.degree}</h4>
+                      <p className="text-neutral-600 dark:text-neutral-400">{edu.college}</p>
                     </div>
-                    <span className="px-3 py-1 bg-white dark:bg-slate-800 rounded-full text-sm font-mono text-neutral-500 dark:text-neutral-400 whitespace-nowrap border border-neutral-200 dark:border-slate-700">
+                    <span className="px-3 py-1 bg-white dark:bg-slate-700 rounded-full text-sm font-mono text-neutral-500 dark:text-neutral-300 whitespace-nowrap border border-neutral-200 dark:border-slate-600">
                       {edu.period}
                     </span>
                   </div>
