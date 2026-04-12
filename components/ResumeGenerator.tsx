@@ -195,14 +195,23 @@ export default function ResumeGenerator() {
       doc.text(`  |  ${dateStr}  |  ${exp.location}`, margin + widthCompany, currentY);
       currentY += 4;
 
-      // Tech Stack
+      // Tech Stack — must use wrapped text + measured height; raw doc.text() overlaps
+      // when jsPDF wraps long strings without an explicit line height.
       if (exp.techStack && exp.techStack.length > 0) {
-        if (currentY + 5 > pageHeight - bottomMargin) { doc.addPage(); currentY = margin; }
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(8);
-        doc.setTextColor(blue[0], blue[1], blue[2]);
-        doc.text(`Stack: ${exp.techStack.join(" • ")}`, margin, currentY);
-        currentY += 4;
+        if (currentY + 5 > pageHeight - bottomMargin) {
+          doc.addPage();
+          currentY = margin;
+        }
+        currentY = addText(
+          `Stack: ${exp.techStack.join(" • ")}`,
+          margin,
+          currentY,
+          contentWidth,
+          8,
+          true,
+          blue,
+          "left"
+        );
       }
 
       // Description
@@ -244,12 +253,24 @@ export default function ResumeGenerator() {
       doc.text(`  |  ${project.type}  |  ${project.period}`, margin + nameWidth, currentY);
       currentY += 4;
 
-      // Tech Stack
+      // Tech Stack (wrapped; same overlap issue as experience stack without maxWidth)
       doc.setFont("helvetica", "italic");
       doc.setFontSize(8);
       doc.setTextColor(blue[0], blue[1], blue[2]);
-      doc.text(project.technologies.join(", "), margin, currentY);
-      currentY += 4;
+      const projectTechLines = doc.splitTextToSize(
+        project.technologies.join(", "),
+        contentWidth
+      );
+      let stackLineY = currentY;
+      projectTechLines.forEach((line: string) => {
+        if (stackLineY + 5 > pageHeight - bottomMargin) {
+          doc.addPage();
+          stackLineY = margin;
+        }
+        doc.text(line, margin, stackLineY);
+        stackLineY += 4;
+      });
+      currentY = stackLineY;
 
       // Highlights
       doc.setFont("helvetica", "normal");

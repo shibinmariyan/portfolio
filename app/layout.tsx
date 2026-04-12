@@ -88,7 +88,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${poppins.variable} ${raleway.variable} font-poppins`}>
+      <body
+        className={`${poppins.variable} ${raleway.variable} font-poppins`}
+        suppressHydrationWarning
+      >
         <ThemeProvider>
           <FramerLazyMotion>
             <MouseFollower />

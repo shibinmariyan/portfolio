@@ -7,7 +7,7 @@ import {
     Globe,
 } from "lucide-react";
 import dynamic from "next/dynamic";
-import { portfolioData } from "@/app/data/portfolio";
+import { portfolioData, getRoundedExperienceYears } from "@/app/data/portfolio";
 
 const ResumeGenerator = dynamic(() => import("@/components/ResumeGenerator"), {
     loading: () => <button className="px-6 py-3 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse">Loading...</button>,
@@ -15,29 +15,7 @@ const ResumeGenerator = dynamic(() => import("@/components/ResumeGenerator"), {
 });
 
 export default function SwissLanding() {
-    // Calculate total experience based on company durations
-    const totalMonths = portfolioData.experience.reduce((acc, exp) => {
-        const parseDate = (d: string) => {
-            if (d.toLowerCase() === "present") return new Date();
-            const parts = d.split("-");
-            if (parts.length < 2) return new Date();
-            const [year, monthAbbr] = parts;
-            const monthMap: { [key: string]: number } = {
-                jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-                jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
-            };
-            return new Date(parseInt(year), monthMap[monthAbbr.toLowerCase()] || 0);
-        };
-
-        const startDate = parseDate(exp.startDate);
-        const endDate = parseDate(exp.endDate || "Present");
-
-        // Calculate difference in months
-        const months = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth());
-        return acc + months;
-    }, 0);
-
-    const expYears = Math.floor(totalMonths / 12);
+    const expYears = getRoundedExperienceYears();
     // Get the very first start year/month for "Since Month Year" display
     const firstJobDate = portfolioData.experience[portfolioData.experience.length - 1].startDate;
     const [startYear, startMonthRaw] = firstJobDate.split("-");
@@ -113,7 +91,7 @@ export default function SwissLanding() {
                                 className="rounded-3xl p-8 bg-gradient-to-br from-primary-600 to-primary-800 text-white relative overflow-hidden group shadow-xl border border-white/20 backdrop-blur-md h-full min-h-[300px] flex flex-col justify-center"
                             >
                                 <div className="relative z-10">
-                                    <div className="text-7xl font-bold mb-2 tracking-tighter">{expYears}+</div>
+                                    <div className="text-7xl font-bold mb-2 tracking-tighter">{expYears}</div>
                                     <div className="text-xl font-medium opacity-90">Years Experience</div>
                                     <div className="mt-6 flex items-center gap-2 text-primary-100 text-sm">
                                         <Globe className="w-4 h-4" /> Since {startMonth} {startYear}
@@ -192,9 +170,9 @@ export default function SwissLanding() {
                                     </div>
                                 </m.div>
 
-                                {/* Stack Overflow */}
+                                {/* Stack Overflow — link only when profile URL is set in portfolio data */}
                                 <m.a
-                                    href="https://stackoverflow.com/users/9638885/shibin-mariyan"
+                                    href={portfolioData.personalInfo.socialStats?.stackoverflow.profileUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     variants={itemVariants}
@@ -202,7 +180,7 @@ export default function SwissLanding() {
                                 >
                                     <div className="p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors cursor-pointer h-full">
                                         <div className="text-2xl font-bold text-orange-800 dark:text-[#F48024]">
-                                            {portfolioData.personalInfo.socialStats?.stackoverflow.reputation || "3.2k+"}
+                                            {portfolioData.personalInfo.socialStats?.stackoverflow.reputation || "331"}
                                         </div>
                                         <div className="text-xs text-orange-900/70 dark:text-neutral-400 flex items-center gap-1 font-medium">
                                             Stack Overflow
@@ -210,23 +188,15 @@ export default function SwissLanding() {
                                     </div>
                                 </m.a>
 
-                                {/* GitLab */}
-                                <m.a
-                                    href="#"
-                                    target="_blank"
-                                    rel="noopener noreferrer" // Update with actual GitLab link if available
-                                    variants={itemVariants}
-                                    className="block h-full"
-                                >
-                                    <div className="p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors cursor-pointer h-full">
-                                        <div className="text-2xl font-bold text-orange-900 dark:text-[#FC6D26]">
-                                            {portfolioData.personalInfo.socialStats?.gitlab?.activeRepos || "82"}
-                                        </div>
-                                        <div className="text-xs text-orange-900/70 dark:text-neutral-400 font-medium">
-                                            Contributions
-                                        </div>
+                                {/* GitLab activity — stat-only card (no link until a real profile URL exists; <a href="#"> was a no-op that jumped to #) */}
+                                <m.div variants={itemVariants} className="p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30 h-full">
+                                    <div className="text-2xl font-bold text-orange-900 dark:text-[#FC6D26]">
+                                        {portfolioData.personalInfo.socialStats?.gitlab?.activeRepos || "82"}
                                     </div>
-                                </m.a>
+                                    <div className="text-xs text-orange-900/70 dark:text-neutral-400 font-medium">
+                                        Contributions
+                                    </div>
+                                </m.div>
 
                                 <m.div variants={itemVariants} className="p-3 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-100 dark:border-green-900/30">
                                     <div className="text-xl font-bold text-green-600 dark:text-green-400">Multi-Cloud</div>

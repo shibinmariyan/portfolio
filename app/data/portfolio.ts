@@ -77,30 +77,56 @@ const experience = [
     },
 ];
 
-const getExperienceYears = () => {
-    const monthMap: { [key: string]: number } = {
-        jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-        jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
-    };
-
-    let earliestTimestamp = Date.now();
-
-    experience.forEach(exp => {
-        const [yearStr, monthStr] = exp.startDate.split('-');
-        if (yearStr && monthStr) {
-            const year = parseInt(yearStr);
-            const month = monthMap[monthStr.toLowerCase()] || 0;
-            const date = new Date(year, month, 1);
-            if (date.getTime() < earliestTimestamp) {
-                earliestTimestamp = date.getTime();
-            }
-        }
-    });
-
-    const diff = Date.now() - earliestTimestamp;
-    const years = diff / (1000 * 60 * 60 * 24 * 365.25);
-    return Math.floor(years) + "+";
+const MONTH_INDEX: Record<string, number> = {
+    jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+    jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
 };
+
+/** First day of the listed start month (YYYY-mmm). */
+function startOfRoleMonth(yearMonth: string): Date {
+    const [y, abbr] = yearMonth.split("-");
+    const m = MONTH_INDEX[abbr?.toLowerCase() ?? ""] ?? 0;
+    return new Date(Number(y), m, 1);
+}
+
+/**
+ * Instant when the role ends for tenure math: exclusive boundary (worked through the listed end month).
+ * `Present` uses `asOf` (typically "now").
+ */
+function exclusiveEndOfRole(endStr: string | undefined, asOf: Date): Date {
+    if (!endStr || endStr.toLowerCase() === "present") {
+        return asOf;
+    }
+    const [y, abbr] = endStr.split("-");
+    const m = MONTH_INDEX[abbr?.toLowerCase() ?? ""] ?? 0;
+    return new Date(Number(y), m + 1, 1);
+}
+
+/** Sum of per-company tenures in fractional years (365.25-day years). */
+export function getTotalExperienceYearsFromRoles(
+    roles: { startDate: string; endDate?: string }[],
+    asOf: Date = new Date()
+): number {
+    const msPerYear = 1000 * 60 * 60 * 24 * 365.25;
+    let totalMs = 0;
+    for (const role of roles) {
+        const start = startOfRoleMonth(role.startDate);
+        const end = exclusiveEndOfRole(role.endDate, asOf);
+        const delta = end.getTime() - start.getTime();
+        if (delta > 0) totalMs += delta;
+    }
+    return totalMs / msPerYear;
+}
+
+/**
+ * Nearest whole year for copy and UI (standard half-up at .5 via Math.round).
+ * Example: 7.78 → 8, 7.4 → 7. Not floored — sum of tenures is rounded to an integer (no "8+" unless you add it in design).
+ */
+export function getRoundedExperienceYears(asOf: Date = new Date()): number {
+    return Math.max(0, Math.round(getTotalExperienceYearsFromRoles(experience, asOf)));
+}
+
+const getExperienceYears = () => String(getRoundedExperienceYears());
 
 export const portfolioData = {
     personalInfo: {
@@ -183,7 +209,9 @@ export const portfolioData = {
         ],
         socialStats: {
             stackoverflow: {
-                reputation: "3,200+",
+                /** Canonical profile; numeric id must match your account or SO redirects elsewhere. */
+                profileUrl: "https://stackoverflow.com/users/10835885/shibin-mariyan-stanly",
+                reputation: "331",
                 answers: "150+",
                 topTags: ["React", "Node.js", "AWS"]
             },
@@ -196,13 +224,17 @@ export const portfolioData = {
             }
         }
     },
-    profileDescription: [
-        `Systems Analyst & Senior Full Stack Developer with ${getExperienceYears()} years architecting enterprise solutions across healthcare, education, and geospatial domains. Specialized in AI platforms, CAD engines, and microservices serving 100K+ users.`,
-        "Proven track record: PIPEDA-compliant healthcare systems, DPR rendering algorithms, and cloud migrations for legacy systems.",
-        "Expert in building real-time collaborative systems, implementing LLM-powered automation, and designing scalable cloud architectures on AWS and Azure. Passionate about creating intuitive user experiences backed by robust engineering.",
-        "As a Technical Lead, I set high engineering standards, architect complex systems, and mentor developers to build robust, scalable solutions. I focus on clean code architecture, performance optimization, and driving technical excellence across the stack."
-    ],
-    summary: `Senior Full Stack Developer & Systems Analyst with ${getExperienceYears()} years of expertise architecting scalable enterprise solutions. Proficient in the MERN stack (MongoDB, Express.js, React, Node.js), AWS Serverless (Lambda, SQS), and Microservices. Proven track record of delivering AI-powered healthcare platforms (PIPEDA/HIPAA), precision CAD engines, and interactive EdTech solutions. Expert in TypeScript, Next.js, and Cloud Infrastructure (AWS/Azure), driving performance optimization and digital transformation for global clients.`,
+    get profileDescription() {
+        return [
+            `Systems Analyst & Senior Full Stack Developer with ${getExperienceYears()} years architecting enterprise solutions across healthcare, education, and geospatial domains. Specialized in AI platforms, CAD engines, and microservices serving 100K+ users.`,
+            "Proven track record: PIPEDA-compliant healthcare systems, DPR rendering algorithms, and cloud migrations for legacy systems.",
+            "Expert in building real-time collaborative systems, implementing LLM-powered automation, and designing scalable cloud architectures on AWS and Azure. Passionate about creating intuitive user experiences backed by robust engineering.",
+            "As a Technical Lead, I set high engineering standards, architect complex systems, and mentor developers to build robust, scalable solutions. I focus on clean code architecture, performance optimization, and driving technical excellence across the stack."
+        ];
+    },
+    get summary() {
+        return `Senior Full Stack Developer & Systems Analyst with ${getExperienceYears()} years of expertise architecting scalable enterprise solutions. Proficient in the MERN stack (MongoDB, Express.js, React, Node.js), AWS Serverless (Lambda, SQS), and Microservices. Proven track record of delivering AI-powered healthcare platforms (PIPEDA/HIPAA), precision CAD engines, and interactive EdTech solutions. Expert in TypeScript, Next.js, and Cloud Infrastructure (AWS/Azure), driving performance optimization and digital transformation for global clients.`;
+    },
     experience,
     projects: [
         {
